@@ -9,14 +9,15 @@ export interface User {
 }
 
 export interface Sweet {
-  id: number;
+  id: string;
   name: string;
   description: string;
-  price: number;
+  price: string;
   category: string;
-  available_quantity: number;
-  created_at: string;
-  updated_at: string;
+  quantity: number;
+  imageUrl?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface InventoryItem {

@@ -216,6 +216,49 @@ export const sweetsController = {
     }
   },
 
+  // PUT /api/sweets/:id/stock - Update sweet stock (public for cart management)
+  updateStock: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { id } = req.params;
+      const { quantity } = req.body;
+      
+      if (!id) {
+        res.status(400).json({ error: 'Sweet ID is required' });
+        return;
+      }
+
+      if (quantity === undefined || quantity === null) {
+        res.status(400).json({ error: 'Quantity is required' });
+        return;
+      }
+
+      const quantityNum = parseInt(quantity);
+      if (isNaN(quantityNum) || quantityNum < 0) {
+        res.status(400).json({ error: 'Quantity must be a valid non-negative number' });
+        return;
+      }
+
+      const updatedSweet = await SweetService.updateSweet(id, { quantity: quantityNum });
+      
+      if (!updatedSweet) {
+        res.status(404).json({ 
+          success: false,
+          error: 'Sweet not found' 
+        });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Stock updated successfully',
+        data: updatedSweet
+      });
+    } catch (error) {
+      console.error('Error updating stock:', error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
   // GET /api/sweets/search - Search sweets with filters
   searchSweets: async (req: Request, res: Response): Promise<void> => {
     try {

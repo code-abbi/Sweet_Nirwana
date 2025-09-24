@@ -55,10 +55,8 @@ sweet_shop_pro/
 ├── frontend/          # React SPA
 │   ├── src/
 │   │   ├── components/
-│   │   ├── pages/
-│   │   ├── services/
+│   │   ├── contexts/
 │   │   ├── types/
-│   │   └── utils/
 │   ├── public/
 │   └── package.json
 └── README.md

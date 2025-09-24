@@ -35,6 +35,13 @@ router.get('/:id', sweetsController.getSweetById);
 router.post('/', authenticateToken, requireAdmin, sweetsController.createSweet);
 
 /**
+ * @route   PUT /api/sweets/:id/stock
+ * @desc    Update sweet stock (public for cart management)
+ * @access  Public
+ */
+router.put('/:id/stock', sweetsController.updateStock);
+
+/**
  * @route   PUT /api/sweets/:id
  * @desc    Update sweet (admin only)
  * @access  Private (Admin)
