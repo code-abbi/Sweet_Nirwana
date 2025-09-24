@@ -11,6 +11,19 @@ import { Sweet } from '../types';
 import GoogleOAuthPage from './GoogleOAuthPage';
 
 const ADMIN_EMAIL = 'wildrabit001@gmail.com';
+const API_BASE_URL = 'http://localhost:3001';
+
+// Helper function to get full image URL
+const getImageUrl = (imageUrl: string) => {
+  if (!imageUrl) return '';
+  if (imageUrl.startsWith('http')) return imageUrl; // Already full URL
+  if (imageUrl.startsWith('/images/')) {
+    const fullUrl = `${API_BASE_URL}${imageUrl}`;
+    console.log(`🔗 Converting image URL: ${imageUrl} → ${fullUrl}`);
+    return fullUrl; // Convert relative to full URL
+  }
+  return imageUrl; // Return as is for other cases
+};
 
 interface CartItem extends Sweet {
   cartQuantity: number;
@@ -668,10 +681,14 @@ const SweetShopApp: React.FC = () => {
               <div className="h-48 bg-gradient-to-br from-orange-100 to-yellow-100 flex items-center justify-center overflow-hidden">
                 {sweet.imageUrl ? (
                   <img 
-                    src={sweet.imageUrl} 
+                    src={getImageUrl(sweet.imageUrl)} 
                     alt={sweet.name}
                     className="w-full h-full object-cover"
+                    onLoad={() => {
+                      console.log(`✅ Image loaded successfully: ${sweet.name} - ${getImageUrl(sweet.imageUrl || '')}`);
+                    }}
                     onError={(e) => {
+                      console.error(`❌ Image failed to load: ${sweet.name} - ${getImageUrl(sweet.imageUrl || '')}`);
                       e.currentTarget.style.display = 'none';
                     }}
                   />

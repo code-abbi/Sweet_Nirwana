@@ -6,6 +6,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import path from 'path';
 import { testConnection } from './models/db';
 
 // Import routes
@@ -16,8 +17,17 @@ import inventoryRoutes from './routes/inventory';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Security middleware
-app.use(helmet());
+// Security middleware with relaxed CSP for images
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "http://localhost:3001", "http://localhost:3000"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:"],
+    },
+  },
+}));
 
 // CORS configuration
 app.use(cors({
@@ -31,6 +41,17 @@ app.use(morgan('combined'));
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// Serve static images with permissive CORS headers
+const imagesPath = path.resolve(__dirname, '..', 'sweet-images');
+console.log(`📸 Serving images from: ${imagesPath}`);
+app.use('/images', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Cross-Origin-Resource-Policy', 'cross-origin');
+  next();
+}, express.static(imagesPath));
 
 // Health check endpoint
 app.get('/health', (req, res) => {

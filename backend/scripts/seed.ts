@@ -37,7 +37,7 @@ async function seed() {
 
     console.log('✅ Users created');
 
-    // Create sample Indian sweets
+    // Create sample Indian sweets with local server URLs
     const sweetsList = [
       {
         name: 'Gulab Jamun',
@@ -45,7 +45,7 @@ async function seed() {
         price: '120',
         quantity: 25,
         description: 'Soft, spongy milk-solid dumplings soaked in rose-flavored sugar syrup',
-        imageUrl: 'https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=400&h=300&fit=crop'
+        imageUrl: '/images/gulab_jamun.jpeg'
       },
       {
         name: 'Rasgulla',
@@ -53,7 +53,7 @@ async function seed() {
         price: '100',
         quantity: 30,
         description: 'Spongy white cottage cheese balls cooked in light sugar syrup',
-        imageUrl: 'https://images.unsplash.com/photo-1599569164668-52ddf5998223?w=400&h=300&fit=crop'
+        imageUrl: '/images/rasgulla.jpeg'
       },
       {
         name: 'Jalebi',
@@ -61,7 +61,7 @@ async function seed() {
         price: '80',
         quantity: 40,
         description: 'Crispy spiral-shaped sweet soaked in saffron sugar syrup',
-        imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'
+        imageUrl: '/images/jalebi.jpeg'
       },
       {
         name: 'Kaju Katli',
@@ -69,7 +69,7 @@ async function seed() {
         price: '450',
         quantity: 15,
         description: 'Diamond-shaped cashew fudge with silver leaf garnishing',
-        imageUrl: 'https://images.unsplash.com/photo-1606471127073-eb0ce6e17ea4?w=400&h=300&fit=crop'
+        imageUrl: '/images/kaju_katli.jpeg'
       },
       {
         name: 'Rasmalai',
@@ -77,7 +77,7 @@ async function seed() {
         price: '180',
         quantity: 20,
         description: 'Soft paneer patties in thickened, sweetened milk with cardamom and pistachios',
-        imageUrl: 'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=400&h=300&fit=crop'
+        imageUrl: '/images/rasmalai.jpeg'
       },
       {
         name: 'Ladoo',
@@ -85,7 +85,7 @@ async function seed() {
         price: '60',
         quantity: 50,
         description: 'Round gram flour balls with ghee, nuts and aromatic spices',
-        imageUrl: 'https://images.unsplash.com/photo-1599569164317-be9d071eab78?w=400&h=300&fit=crop'
+        imageUrl: '/images/ladoo.jpeg'
       },
       {
         name: 'Barfi',
@@ -93,7 +93,7 @@ async function seed() {
         price: '200',
         quantity: 25,
         description: 'Dense milk-based sweet garnished with nuts and silver leaf',
-        imageUrl: 'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=400&h=300&fit=crop'
+        imageUrl: '/images/barfi.jpeg'
       },
       {
         name: 'Sandesh',
@@ -101,7 +101,7 @@ async function seed() {
         price: '150',
         quantity: 18,
         description: 'Delicate Bengali sweet made from fresh cottage cheese and jaggery',
-        imageUrl: 'https://images.unsplash.com/photo-1606471127073-eb0ce6e17ea4?w=400&h=300&fit=crop'
+        imageUrl: '/images/sandesh.jpeg'
       },
       {
         name: 'Halwa',
@@ -109,7 +109,7 @@ async function seed() {
         price: '120',
         quantity: 30,
         description: 'Rich semolina pudding cooked in ghee with nuts and cardamom',
-        imageUrl: 'https://images.unsplash.com/photo-1571115764595-644a1f56a55c?w=400&h=300&fit=crop'
+        imageUrl: '/images/halwa.jpeg'
       },
       {
         name: 'Malai Roll',
@@ -117,7 +117,7 @@ async function seed() {
         price: '160',
         quantity: 12,
         description: 'Cream-filled cottage cheese rolls dusted with pistachios',
-        imageUrl: 'https://images.unsplash.com/photo-1599569164668-52ddf5998223?w=400&h=300&fit=crop'
+        imageUrl: '/images/malai_roll.jpeg'
       },
     ];
 
