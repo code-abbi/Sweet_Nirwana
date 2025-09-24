@@ -16,13 +16,11 @@ const API_BASE_URL = 'http://localhost:3001';
 // Helper function to get full image URL
 const getImageUrl = (imageUrl: string) => {
   if (!imageUrl) return '';
-  if (imageUrl.startsWith('http')) return imageUrl; // Already full URL
+  if (imageUrl.startsWith('http')) return imageUrl;
   if (imageUrl.startsWith('/images/')) {
-    const fullUrl = `${API_BASE_URL}${imageUrl}`;
-    console.log(`🔗 Converting image URL: ${imageUrl} → ${fullUrl}`);
-    return fullUrl; // Convert relative to full URL
+    return `${API_BASE_URL}${imageUrl}`;
   }
-  return imageUrl; // Return as is for other cases
+  return imageUrl;
 };
 
 interface CartItem extends Sweet {
@@ -684,11 +682,7 @@ const SweetShopApp: React.FC = () => {
                     src={getImageUrl(sweet.imageUrl)} 
                     alt={sweet.name}
                     className="w-full h-full object-cover"
-                    onLoad={() => {
-                      console.log(`✅ Image loaded successfully: ${sweet.name} - ${getImageUrl(sweet.imageUrl || '')}`);
-                    }}
                     onError={(e) => {
-                      console.error(`❌ Image failed to load: ${sweet.name} - ${getImageUrl(sweet.imageUrl || '')}`);
                       e.currentTarget.style.display = 'none';
                     }}
                   />
