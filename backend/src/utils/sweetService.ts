@@ -2,7 +2,6 @@ import { db } from '../models/db';
 import { sweets } from '../models/schema';
 import { eq, and, gte, lte, ilike, desc } from 'drizzle-orm';
 import type { Sweet, NewSweet } from '../models/schema';
-import type { SearchSweetQuery, UpdateSweetRequest } from '../types';
 
 /**
  * Sweet service layer for database operations
@@ -10,7 +9,64 @@ import type { SearchSweetQuery, UpdateSweetRequest } from '../types';
  */
 export class SweetService {
   /**
-   * Get all sweets with optional pagination
+   * Get sweets with filters and pagination
+   */
+  static async getSweets(page = 1, limit = 10, filters: any = {}) {
+    const { search, category, minPrice, maxPrice, sortBy = 'name', sortOrder = 'asc' } = filters;
+    const offset = (page - 1) * limit;
+
+    let whereConditions: any[] = [];
+
+    // Add search filter (searches name and description)
+    if (search) {
+      whereConditions.push(ilike(sweets.name, `%${search}%`));
+    }
+
+    // Add category filter
+    if (category) {
+      whereConditions.push(ilike(sweets.category, `%${category}%`));
+    }
+
+    // Add price range filters
+    if (minPrice !== undefined) {
+      whereConditions.push(gte(sweets.price, minPrice.toString()));
+    }
+
+    if (maxPrice !== undefined) {
+      whereConditions.push(lte(sweets.price, maxPrice.toString()));
+    }
+
+    const whereClause = whereConditions.length > 0 
+      ? and(...whereConditions) 
+      : undefined;
+
+    // Get total count for pagination
+    const totalResult = await db
+      .select({ count: sweets.id })
+      .from(sweets)
+      .where(whereClause);
+    
+    const totalCount = totalResult.length;
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Get sweets with sorting
+    const sweetsResult = await db
+      .select()
+      .from(sweets)
+      .where(whereClause)
+      .orderBy(sortOrder === 'desc' ? desc(sweets.name) : sweets.name)
+      .limit(limit)
+      .offset(offset);
+
+    return {
+      sweets: sweetsResult,
+      totalCount,
+      totalPages
+    };
+  }
+
+  /**
+   * Get all sweets with optional pagination (legacy method)
    */
   static async getAllSweets(page = 1, limit = 20): Promise<Sweet[]> {
     const offset = (page - 1) * limit;
@@ -39,9 +95,10 @@ export class SweetService {
   /**
    * Create a new sweet
    */
-  static async createSweet(sweetData: NewSweet): Promise<Sweet> {
+  static async createSweet(sweetData: any): Promise<Sweet> {
     const insertPayload: any = {
       ...sweetData,
+      createdAt: new Date(),
       updatedAt: new Date(),
     };
 
@@ -61,7 +118,7 @@ export class SweetService {
   /**
    * Update sweet by ID
    */
-  static async updateSweet(id: string, updateData: UpdateSweetRequest): Promise<Sweet | null> {
+  static async updateSweet(id: string, updateData: any): Promise<Sweet | null> {
     const updatePayload: any = {
       ...updateData,
       updatedAt: new Date(),
@@ -94,9 +151,9 @@ export class SweetService {
   }
 
   /**
-   * Search sweets with filters
+   * Search sweets with filters (legacy method)
    */
-  static async searchSweets(query: SearchSweetQuery): Promise<Sweet[]> {
+  static async searchSweets(query: any): Promise<Sweet[]> {
     const { name, category, minPrice, maxPrice, page = 1, limit = 20 } = query;
     const offset = (page - 1) * limit;
 
@@ -132,107 +189,5 @@ export class SweetService {
       .orderBy(desc(sweets.createdAt))
       .limit(limit)
       .offset(offset);
-  }
-
-  /**
-   * Purchase sweet (decrease quantity)
-   */
-  static async purchaseSweet(id: string, quantity: number): Promise<Sweet | null> {
-    // First, get current sweet data
-    const currentSweet = await this.getSweetById(id);
-    
-    if (!currentSweet) {
-      throw new Error('Sweet not found');
-    }
-
-    if (currentSweet.quantity < quantity) {
-      throw new Error('Insufficient quantity available');
-    }
-
-    if (quantity <= 0) {
-      throw new Error('Purchase quantity must be greater than 0');
-    }
-
-    // Update quantity
-    const newQuantity = currentSweet.quantity - quantity;
-    
-    const result = await db
-      .update(sweets)
-      .set({
-        quantity: newQuantity,
-        updatedAt: new Date(),
-      })
-      .where(eq(sweets.id, id))
-      .returning();
-
-    return result[0] || null;
-  }
-
-  /**
-   * Restock sweet (increase quantity)
-   */
-  static async restockSweet(id: string, quantity: number): Promise<Sweet | null> {
-    if (quantity <= 0) {
-      throw new Error('Restock quantity must be greater than 0');
-    }
-
-    // Get current sweet data
-    const currentSweet = await this.getSweetById(id);
-    
-    if (!currentSweet) {
-      throw new Error('Sweet not found');
-    }
-
-    // Update quantity
-    const newQuantity = currentSweet.quantity + quantity;
-    
-    const result = await db
-      .update(sweets)
-      .set({
-        quantity: newQuantity,
-        updatedAt: new Date(),
-      })
-      .where(eq(sweets.id, id))
-      .returning();
-
-    return result[0] || null;
-  }
-
-  /**
-   * Get sweets count for pagination
-   */
-  static async getSweetsCount(query?: SearchSweetQuery): Promise<number> {
-    let whereConditions: any[] = [];
-
-    if (query) {
-      const { name, category, minPrice, maxPrice } = query;
-
-      if (name) {
-        whereConditions.push(ilike(sweets.name, `%${name}%`));
-      }
-
-      if (category) {
-        whereConditions.push(ilike(sweets.category, `%${category}%`));
-      }
-
-      if (minPrice !== undefined) {
-        whereConditions.push(gte(sweets.price, minPrice.toString()));
-      }
-
-      if (maxPrice !== undefined) {
-        whereConditions.push(lte(sweets.price, maxPrice.toString()));
-      }
-    }
-
-    const whereClause = whereConditions.length > 0 
-      ? and(...whereConditions) 
-      : undefined;
-
-    const result = await db
-      .select({ count: sweets.id })
-      .from(sweets)
-      .where(whereClause);
-
-    return result.length;
   }
 }

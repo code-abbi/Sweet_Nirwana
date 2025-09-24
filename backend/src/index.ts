@@ -7,6 +7,7 @@ import { testConnection } from './models/db';
 
 // Import routes
 import authRoutes from './routes/auth';
+import sweetsRoutes from './routes/sweets';
 
 // Load environment variables
 dotenv.config();
@@ -42,50 +43,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api', authRoutes); // Also include admin routes at /api level
-
-// Temporary admin-only route for testing
-app.delete('/api/sweets/:id', (req, res) => {
-  // First check authentication
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
-  
-  if (!token) {
-    res.status(401).json({
-      success: false,
-      error: 'Access token required',
-    });
-    return;
-  }
-  
-  // Simulate token verification (simplified for test)
-  try {
-    // In a real app, we'd verify the JWT properly
-    const tokenParts = token.split('.');
-    if (tokenParts.length !== 3) {
-      throw new Error('Invalid token format');
-    }
-    
-    const decoded = JSON.parse(Buffer.from(tokenParts[1]!, 'base64').toString());
-    
-    if (decoded.userRole !== 'admin') {
-      res.status(403).json({
-        success: false,
-        error: 'Admin access required',
-      });
-      return;
-    }
-    
-    res.status(200).json({
-      success: true,
-      message: 'Sweet deleted',
-    });
-  } catch (error) {
-    res.status(401).json({
-      success: false,
-      error: 'Invalid token',
-    });
-  }
-});
+app.use('/api/sweets', sweetsRoutes);
 
 // API info endpoint
 app.get('/api', (req, res) => {

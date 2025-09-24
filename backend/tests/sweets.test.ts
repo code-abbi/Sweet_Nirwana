@@ -12,6 +12,40 @@ jest.mock('../src/models/db', () => ({
   testConnection: jest.fn().mockResolvedValue(true),
 }));
 
+// Mock JWT utilities for authentication testing
+jest.mock('../src/utils/auth', () => ({
+  JWTUtils: {
+    verifyToken: jest.fn((token) => {
+      // Mock token verification for testing
+      if (token && token.includes('mock-signature')) {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          try {
+            const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+            return {
+              userId: payload.userId,
+              userRole: payload.userRole
+            };
+          } catch {
+            return null;
+          }
+        }
+      }
+      return null;
+    }),
+    generateToken: jest.fn((userId, userRole) => {
+      const payload = { userId, userRole, exp: Math.floor(Date.now() / 1000) + 3600 };
+      const header = Buffer.from(JSON.stringify({ alg: 'HS256', typ: 'JWT' })).toString('base64');
+      const body = Buffer.from(JSON.stringify(payload)).toString('base64');
+      return `${header}.${body}.mock-signature`;
+    })
+  },
+  PasswordUtils: {
+    hashPassword: jest.fn((password) => Promise.resolve(`hashed-${password}`)),
+    comparePassword: jest.fn((password, hash) => Promise.resolve(hash === `hashed-${password}`))
+  }
+}));
+
 // Mock sweet service with in-memory storage for tests
 const mockSweets: any[] = [];
 let sweetIdCounter = 1;
