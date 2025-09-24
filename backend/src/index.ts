@@ -3,6 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
+import { testConnection } from './models/db';
 
 // Load environment variables
 dotenv.config();
@@ -71,10 +72,13 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 // Start server only if not in test environment
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
     console.log(`🍭 Sweet Shop API server is running on port ${PORT}`);
     console.log(`📱 Health check: http://localhost:${PORT}/health`);
     console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
+    
+    // Test database connection on startup
+    await testConnection();
   });
 }
 

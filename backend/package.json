@@ -12,6 +12,7 @@
     "test:coverage": "jest --coverage",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
+    "db:migrate:run": "ts-node src/utils/migrate.ts",
     "db:studio": "drizzle-kit studio",
     "lint": "eslint src/**/*.ts",
     "clean": "rimraf dist"
