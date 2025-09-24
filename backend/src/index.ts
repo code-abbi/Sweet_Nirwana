@@ -8,6 +8,7 @@ import { testConnection } from './models/db';
 // Import routes
 import authRoutes from './routes/auth';
 import sweetsRoutes from './routes/sweets';
+import inventoryRoutes from './routes/inventory';
 
 // Load environment variables
 dotenv.config();
@@ -44,6 +45,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api', authRoutes); // Also include admin routes at /api level
 app.use('/api/sweets', sweetsRoutes);
+app.use('/api/inventory', inventoryRoutes);
 
 // API info endpoint
 app.get('/api', (req, res) => {
@@ -54,6 +56,7 @@ app.get('/api', (req, res) => {
       health: '/health',
       auth: '/api/auth/*',
       sweets: '/api/sweets/*',
+      inventory: '/api/inventory/*',
       admin: '/api/admin/*',
     },
   });
