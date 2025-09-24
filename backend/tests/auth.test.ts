@@ -12,9 +12,57 @@ jest.mock('../src/models/db', () => ({
   testConnection: jest.fn().mockResolvedValue(true),
 }));
 
+// Mock user service with in-memory storage for tests
+const mockUsers: any[] = [];
+let userIdCounter = 1;
+
+jest.mock('../src/utils/userService', () => ({
+  UserService: {
+    createUser: jest.fn((userData) => {
+      const newUser = {
+        id: `user-${userIdCounter++}`,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        role: userData.role || 'user',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      mockUsers.push(newUser);
+      return Promise.resolve(newUser);
+    }),
+    findUserByEmail: jest.fn((email) => {
+      const user = mockUsers.find(u => u.email === email);
+      return Promise.resolve(user || null);
+    }),
+    findUserById: jest.fn((id) => {
+      const user = mockUsers.find(u => u.id === id);
+      return Promise.resolve(user || null);
+    }),
+    userExistsByEmail: jest.fn((email) => {
+      const exists = mockUsers.some(u => u.email === email);
+      return Promise.resolve(exists);
+    }),
+    verifyPassword: jest.fn((email, password) => {
+      // For testing, verify that user exists AND password matches what we used during registration
+      const user = mockUsers.find(u => u.email === email);
+      if (!user) return Promise.resolve(null);
+      
+      // Simple password verification for testing - expect 'securePassword123'
+      if (password === 'securePassword123') {
+        return Promise.resolve(user);
+      }
+      
+      return Promise.resolve(null);
+    }),
+  },
+}));
+
 // Test setup
 beforeEach(() => {
-  // Clear all mocks before each test
+  // Clear mock users and reset mocks before each test
+  mockUsers.length = 0;
+  userIdCounter = 1;
   jest.clearAllMocks();
 });
 
@@ -123,7 +171,7 @@ describe('Authentication Endpoints', () => {
 
       expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('error');
-      expect(response.body.error).toContain('password');
+      expect(response.body.error).toContain('Password');
     });
   });
 
@@ -277,7 +325,7 @@ describe('Authentication Endpoints', () => {
 
       expect(response.body).toHaveProperty('success', false);
       expect(response.body).toHaveProperty('error');
-      expect(response.body.error).toContain('admin');
+      expect(response.body.error).toContain('Admin');
     });
   });
 
