@@ -1,4 +1,4 @@
-# 🍭 Sweet Shop Pro - Indian Sweet Shop
+# 🍭 mithai Shop - Indian Sweet Shop
 
 A beautiful, full-stack Indian sweet shop e-commerce application with Google OAuth authentication, real-time inventory management, and comprehensive cart functionality.
 
