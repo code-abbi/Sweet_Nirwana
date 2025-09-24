@@ -1,17 +1,17 @@
+// Load environment variables FIRST
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
-import dotenv from 'dotenv';
 import { testConnection } from './models/db';
 
 // Import routes
 import authRoutes from './routes/auth';
 import sweetsRoutes from './routes/sweets';
 import inventoryRoutes from './routes/inventory';
-
-// Load environment variables
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
