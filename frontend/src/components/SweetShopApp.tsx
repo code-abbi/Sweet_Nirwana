@@ -438,7 +438,7 @@ const SweetShopApp: React.FC = () => {
             {/* Logo */}
             <div className="flex items-center">
               <h1 className="text-2xl font-bold sweet-gradient bg-clip-text text-transparent">
-                � Mithai Shop Pro
+                Mithai Shop
               </h1>
             </div>
 
