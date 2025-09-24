@@ -1,3 +1,10 @@
+/**
+ * Core domain types for the Sweet Shop application
+ */
+
+/**
+ * User entity representing application users
+ */
 export interface User {
   id: number;
   email: string;
@@ -6,8 +13,12 @@ export interface User {
   role: 'customer' | 'admin';
   created_at: string;
   updated_at: string;
+  isAdmin?: boolean;
 }
 
+/**
+ * Sweet product entity
+ */
 export interface Sweet {
   id: string;
   name: string;
@@ -18,6 +29,52 @@ export interface Sweet {
   imageUrl?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * Cart-specific sweet item with quantity
+ */
+export interface CartItem extends Sweet {
+  cartQuantity: number;
+}
+
+/**
+ * Sweet with selected quantity for UI state
+ */
+export interface SweetWithQuantity extends Sweet {
+  selectedQuantity: number;
+}
+
+/**
+ * Form data interface for checkout
+ */
+export interface CheckoutFormData {
+  fullName: string;
+  email: string;
+  address: string;
+  city: string;
+  pinCode: string;
+  cardNumber: string;
+  expiryDate: string;
+  cvv: string;
+}
+
+/**
+ * Form validation errors
+ */
+export interface FormErrors {
+  [key: string]: string;
+}
+
+/**
+ * New sweet creation form data
+ */
+export interface NewSweetFormData {
+  name: string;
+  category: string;
+  price: string;
+  quantity: string;
+  description: string;
 }
 
 export interface InventoryItem {

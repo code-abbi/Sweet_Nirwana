@@ -259,19 +259,6 @@ This project was built entirely with AI assistance following an iterative develo
 - **Image Upload**: Admin image management system
 - **Search & Filter**: Advanced product discovery
 
-## 📊 Current Sweet Catalog
-
-1. **Gulab Jamun** - ₹120 (Syrup-based)
-2. **Rasgulla** - ₹100 (Syrup-based)
-3. **Jalebi** - ₹80 (Fried)
-4. **Kaju Katli** - ₹450 (Dry Fruits)
-5. **Rasmalai** - ₹180 (Milk-based)
-6. **Ladoo** - ₹60 (Flour-based)
-7. **Barfi** - ₹200 (Milk-based)
-8. **Sandesh** - ₹150 (Bengali)
-9. **Halwa** - ₹120 (Flour-based)
-10. **Malai Roll** - ₹160 (Bengali)
-
 ---
 
 **Built using AI-powered development**  
@@ -291,4 +278,4 @@ If you have any questions or need help with setup, please open an issue on GitHu
 
 ---
 
-*Sweet Shop Pro - Where tradition meets technology! 🍮*
+*Sweet Shop - Where tradition meets technology! 🍮*
