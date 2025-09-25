@@ -18,9 +18,7 @@ export const sweetsController = {
       
       res.json({
         success: true,
-        data: {
-          sweets
-        }
+        data: sweets
       });
     } catch (error) {
       console.error('Get all sweets error:', error);
