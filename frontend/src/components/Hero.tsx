@@ -134,13 +134,13 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-slate-800/60 to-gray-800/40"></div>
           
-          {/* Floating Sweet Emojis */}
-          <FloatingSweet emoji="🍬" delay={0} position="top-10 left-10" />
-          <FloatingSweet emoji="🧁" delay={1000} position="top-20 right-16" />
-          <FloatingSweet emoji="🍭" delay={2000} position="top-32 left-1/4" />
-          <FloatingSweet emoji="🍰" delay={1500} position="top-40 right-1/3" />
-          <FloatingSweet emoji="🎂" delay={500} position="bottom-20 left-20" />
-          <FloatingSweet emoji="🍪" delay={2500} position="bottom-32 right-20" />
+          {/* Floating Sweet Emojis - Positioned away from text content */}
+          <FloatingSweet emoji="🍬" delay={0} position="top-8 left-8" />
+          <FloatingSweet emoji="🧁" delay={1000} position="top-8 right-8" />
+          <FloatingSweet emoji="🍭" delay={2000} position="left-8 top-1/2 transform -translate-y-1/2" />
+          <FloatingSweet emoji="🍰" delay={1500} position="right-8 top-1/2 transform -translate-y-1/2" />
+          <FloatingSweet emoji="🎂" delay={500} position="bottom-8 left-8" />
+          <FloatingSweet emoji="🍪" delay={2500} position="bottom-8 right-8" />
         </div>
 
         <div className="relative z-10 p-8 md:p-12">
@@ -150,34 +150,19 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
               ✨ Premium Quality Since 1947
             </span>
             <span className="bg-white/10 backdrop-blur-sm text-white text-xs font-bold px-4 py-2 rounded-full shadow-md border border-white/20">
-              ⭐ 4.9/5 Customer Rating
+              ⭐ 4.9 Customer Rating
             </span>
           </div>
 
           {/* Main Heading */}
           <div className="text-center mb-8">
             <div className="relative inline-block">
-              {/* Decorative Elements */}
-              <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex items-center gap-2">
-                <span className="text-2xl animate-bounce" style={{ animationDelay: '0s' }}>✨</span>
-                <span className="text-2xl animate-bounce" style={{ animationDelay: '0.5s' }}>🏰</span>
-                <span className="text-2xl animate-bounce" style={{ animationDelay: '1s' }}>✨</span>
-              </div>
-              
               {/* Enhanced Title */}
               <div className="relative">
-                              <h1 className="text-6xl md:text-8xl font-bold text-transparent bg-gradient-to-r from-brand-orange via-yellow-400 to-brand-orange bg-clip-text leading-tight">
+                <h1 className="text-6xl md:text-8xl font-bold text-transparent bg-gradient-to-r from-brand-orange via-yellow-400 to-brand-orange bg-clip-text leading-tight">
                   Sweet Nirvana
                 </h1>
-                <span className="absolute -top-4 -right-4 text-3xl animate-pulse">👑</span>
                 <div className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-60"></div>
-              </div>
-              
-              {/* Decorative underline */}
-              <div className="flex justify-center items-center mt-2 gap-2">
-                <div className="w-8 h-0.5 bg-gradient-to-r from-transparent to-orange-400"></div>
-                <span className="text-orange-500 text-xl">🕌</span>
-                <div className="w-8 h-0.5 bg-gradient-to-l from-transparent to-orange-400"></div>
               </div>
             </div>
             

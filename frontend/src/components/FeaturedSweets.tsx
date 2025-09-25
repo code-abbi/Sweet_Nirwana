@@ -49,6 +49,7 @@ interface FeaturedSweetsProps {
 export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToCart, onMixedBoxClick }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   
   // Filter global desserts for Most Loved section and randomize their order
   const globalCategories = ['European', 'Middle Eastern', 'French', 'American', 'Japanese', 'Spanish', 'Australian', 'Italian', 'Latin American'];
@@ -65,15 +66,15 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
     return () => clearInterval(interval);
   }, []);
   
-  // Auto-rotate slides
+  // Auto-rotate slides - pause on hover
   useEffect(() => {
-    if (featuredSweets.length > 3) {
+    if (featuredSweets.length > 3 && !isPaused) {
       const interval = setInterval(() => {
         setCurrentSlide(prev => (prev + 1) % Math.ceil(featuredSweets.length / 3));
       }, 4000);
       return () => clearInterval(interval);
     }
-  }, [featuredSweets.length]);
+  }, [featuredSweets.length, isPaused]);
 
   const nextSlide = () => {
     setCurrentSlide(prev => (prev + 1) % Math.ceil(featuredSweets.length / 3));
@@ -179,7 +180,11 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
           )}
 
           {/* Carousel Track */}
-          <div className="overflow-hidden rounded-3xl bg-white/5 backdrop-blur-sm p-8 border border-white/10">
+          <div 
+            className="overflow-hidden rounded-3xl bg-white/5 backdrop-blur-sm p-8 border border-white/10"
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
             <div 
               className="flex transition-transform duration-500 ease-in-out gap-8"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}

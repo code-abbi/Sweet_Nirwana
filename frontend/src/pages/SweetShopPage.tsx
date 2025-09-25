@@ -43,12 +43,14 @@ const API_BASE_URL = 'http://localhost:3001';
 const SweetShopPage: React.FC = () => {
   // Authentication and navigation hooks
   const { isSignedIn, user, signIn, signOut } = useAuth();
-  const navigate = useNavigate();
+  // const navigate = useNavigate(); // Currently unused
   const { showToast } = useToast();
   
   // Main application state
   const [sweets, setSweets] = useState<Sweet[]>([]); // All sweets from database
+  const [shuffledSweets, setShuffledSweets] = useState<Sweet[]>([]); // One-time shuffled sweets to maintain positions
   const [cart, setCart] = useState<CartItem[]>([]); // Shopping cart items
+  const [displayStock, setDisplayStock] = useState<{[key: string]: number}>({}); // Display stock separate from actual
   const [loading, setLoading] = useState(true); // Loading state for data fetching
   const [sweetFilter, setSweetFilter] = useState<'all' | 'indian' | 'global'>('all'); // Filter for sweet categories
   
@@ -86,6 +88,21 @@ const SweetShopPage: React.FC = () => {
       const data = await response.json();
       if (data.success) {
         setSweets(data.data);
+        
+        // Only shuffle when user logs in for the first time or sweets change
+        if (isSignedIn && data.data.length > 0) {
+          // Check if we already have shuffled sweets with the same IDs
+          const currentIds = shuffledSweets.map(s => s.id).sort().join(',');
+          const newIds = data.data.map((s: Sweet) => s.id).sort().join(',');
+          
+          if (currentIds !== newIds) {
+            // Only reshuffle if the sweet collection has changed
+            setShuffledSweets([...data.data].sort(() => Math.random() - 0.5));
+          }
+        } else if (!isSignedIn) {
+          // Clear shuffled sweets when logged out
+          setShuffledSweets([]);
+        }
       }
     } catch (error) {
       console.error('Error fetching sweets:', error);
@@ -97,6 +114,28 @@ const SweetShopPage: React.FC = () => {
   useEffect(() => {
     fetchSweets();
   }, []);
+
+  // Shuffle sweets when user first signs in
+  useEffect(() => {
+    if (isSignedIn && sweets.length > 0 && shuffledSweets.length === 0) {
+      setShuffledSweets([...sweets].sort(() => Math.random() - 0.5));
+    }
+  }, [isSignedIn, sweets, shuffledSweets.length]);
+
+  // Sync display stock with actual stock and cart quantities
+  useEffect(() => {
+    if (sweets.length > 0) {
+      const newDisplayStock: {[key: string]: number} = {};
+      
+      sweets.forEach(sweet => {
+        const cartItem = cart.find(item => item.id === sweet.id);
+        const cartQuantity = cartItem ? cartItem.cartQuantity : 0;
+        newDisplayStock[sweet.id] = Math.max(0, sweet.quantity - cartQuantity);
+      });
+      
+      setDisplayStock(newDisplayStock);
+    }
+  }, [sweets, cart]);
 
   const updateSweetStockOnServer = async (id: string, newQuantity: number) => {
     try {
@@ -116,16 +155,21 @@ const SweetShopPage: React.FC = () => {
       return;
     }
 
-    const sweetInStock = sweets.find(s => s.id === sweet.id);
-    if (!sweetInStock || sweetInStock.quantity <= 0) return;
-
+    // Get current available stock (actual stock - items in cart)
     const existingItem = cart.find(item => item.id === sweet.id);
     const currentCartQty = existingItem ? existingItem.cartQuantity : 0;
+    const availableStock = sweet.quantity - currentCartQty;
 
-    if (currentCartQty >= sweetInStock.quantity) {
-      showToast('Cannot add more than available stock.', 'warning');
+    if (availableStock <= 0) {
+      showToast('This item is out of stock.', 'warning');
       return;
     }
+
+    // Update display stock to show immediate visual feedback
+    setDisplayStock(prev => ({
+      ...prev,
+      [sweet.id]: sweet.quantity - (currentCartQty + 1)
+    }));
 
     setCart(prevCart => {
       if (existingItem) {
@@ -141,31 +185,81 @@ const SweetShopPage: React.FC = () => {
   };
 
   const handleUpdateCartQuantity = (sweetId: string, newQuantity: number) => {
+    const sweetInStock = sweets.find(s => s.id === sweetId);
+    
     if (newQuantity <= 0) {
+      // Remove item from cart and restore display stock
+      if (sweetInStock) {
+        setDisplayStock(prev => ({
+          ...prev,
+          [sweetId]: sweetInStock.quantity
+        }));
+      }
       setCart(prevCart => prevCart.filter(item => item.id !== sweetId));
       return;
     }
     
-    const sweetInStock = sweets.find(s => s.id === sweetId);
     if (sweetInStock && newQuantity > sweetInStock.quantity) {
       showToast('Cannot add more than available stock.', 'warning');
+      // Set quantity to maximum available
+      const maxQuantity = sweetInStock.quantity;
       setCart(prevCart => prevCart.map(item =>
         item.id === sweetId
-          ? { ...item, cartQuantity: sweetInStock.quantity }
+          ? { ...item, cartQuantity: maxQuantity }
           : item
       ));
+      // Update display stock
+      setDisplayStock(prev => ({
+        ...prev,
+        [sweetId]: 0 // No stock left if cart has max quantity
+      }));
       return;
     }
 
+    // Update cart quantity
     setCart(prevCart =>
       prevCart.map(item =>
         item.id === sweetId ? { ...item, cartQuantity: newQuantity } : item
       )
     );
+
+    // Update display stock to reflect new cart quantity
+    if (sweetInStock) {
+      setDisplayStock(prev => ({
+        ...prev,
+        [sweetId]: sweetInStock.quantity - newQuantity
+      }));
+    }
   };
 
   const handleRemoveFromCart = (sweetId: string) => {
+    const itemToRemove = cart.find(item => item.id === sweetId);
+    if (itemToRemove) {
+      // Restore display stock when item is removed from cart
+      const originalStock = sweets.find(s => s.id === sweetId)?.quantity ?? 0;
+      setDisplayStock(prev => ({
+        ...prev,
+        [sweetId]: originalStock
+      }));
+      showToast(`${itemToRemove.name} removed from cart`, 'success');
+    }
     setCart(prevCart => prevCart.filter(item => item.id !== sweetId));
+  };
+
+  /**
+   * Handles cart closure and restores display stock if cart is closed without completing order
+   */
+  const handleCartClose = () => {
+    // Restore display stock for all cart items when cart is closed
+    cart.forEach(item => {
+      const originalStock = sweets.find(s => s.id === item.id)?.quantity ?? 0;
+      setDisplayStock(prev => ({
+        ...prev,
+        [item.id]: originalStock
+      }));
+    });
+    
+    setIsCartOpen(false);
   };
 
   // Admin functions
@@ -185,17 +279,23 @@ const SweetShopPage: React.FC = () => {
       
       if (response.ok) {
         fetchSweets(); // Refresh the sweets list
+        showToast(`${sweetData.name} added successfully!`, 'success');
         return true;
+      } else {
+        showToast(`Failed to add ${sweetData.name}`, 'error');
+        return false;
       }
-      return false;
     } catch (error) {
       console.error('Error adding sweet:', error);
+      showToast('Network error while adding sweet', 'error');
       return false;
     }
   };
 
   const handleUpdateStock = async (sweetId: string, newQuantity: number): Promise<boolean> => {
     try {
+      const sweetName = sweets.find(s => s.id === sweetId)?.name || 'Item';
+      
       const response = await fetch(`${API_BASE_URL}/api/sweets/${sweetId}/stock`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -203,55 +303,99 @@ const SweetShopPage: React.FC = () => {
       });
       
       if (response.ok) {
+        // Update display stock immediately
+        setDisplayStock(prev => ({
+          ...prev,
+          [sweetId]: newQuantity
+        }));
+        
         fetchSweets(); // Refresh the sweets list
+        showToast(`${sweetName} stock updated to ${newQuantity} units`, 'success');
         return true;
+      } else {
+        showToast(`Failed to update ${sweetName} stock`, 'error');
+        return false;
       }
-      return false;
     } catch (error) {
       console.error('Error updating stock:', error);
+      showToast('Network error while updating stock', 'error');
       return false;
     }
   };
 
   const handleDeleteSweet = async (sweetId: string): Promise<boolean> => {
     try {
+      const sweetName = sweets.find(s => s.id === sweetId)?.name || 'Item';
+      
       const response = await fetch(`${API_BASE_URL}/api/sweets/${sweetId}`, {
         method: 'DELETE',
       });
       
       if (response.ok) {
+        // Remove from display stock
+        setDisplayStock(prev => {
+          const newStock = { ...prev };
+          delete newStock[sweetId];
+          return newStock;
+        });
+        
         fetchSweets(); // Refresh the sweets list
+        showToast(`${sweetName} deleted successfully`, 'success');
         return true;
+      } else {
+        showToast(`Failed to delete ${sweetName}`, 'error');
+        return false;
       }
-      return false;
     } catch (error) {
       console.error('Error deleting sweet:', error);
+      showToast('Network error while deleting sweet', 'error');
       return false;
     }
   };
   
   const handleOrderComplete = async (orderData: any) => {
-    // Update stock quantities on the server after successful order
-    const stockUpdatePromises = cart.map(item => {
-      const sweet = sweets.find(s => s.id === item.id);
-      if (sweet) {
-        return updateSweetStockOnServer(item.id, sweet.quantity - item.cartQuantity);
-      }
-      return Promise.resolve();
-    });
-    
     try {
+      showToast('Processing your order...', 'success');
+      
+      // Update stock quantities on the server after successful order
+      const stockUpdatePromises = cart.map(item => {
+        const sweet = sweets.find(s => s.id === item.id);
+        if (sweet) {
+          const newStock = Math.max(0, sweet.quantity - item.cartQuantity);
+          return updateSweetStockOnServer(item.id, newStock);
+        }
+        return Promise.resolve();
+      });
+      
       await Promise.all(stockUpdatePromises);
+      
+      // Clear display stock state for ordered items
+      const clearedDisplayStock = { ...displayStock };
+      cart.forEach(item => {
+        const sweet = sweets.find(s => s.id === item.id);
+        if (sweet) {
+          const newStock = Math.max(0, sweet.quantity - item.cartQuantity);
+          clearedDisplayStock[item.id] = newStock;
+        }
+      });
+      setDisplayStock(clearedDisplayStock);
       
       // Clear the cart after successful order
       setCart([]);
       setIsCartOpen(false);
       
-      // Refresh sweets to show updated stock
-      fetchSweets();
+      // Refresh sweets data to show updated stock from server
+      await fetchSweets();
+      
+      showToast('🎉 Order completed successfully! Your sweets are on the way!', 'success');
+      
     } catch (error) {
       console.error('Error updating stock after order:', error);
       showToast('Order was placed but there was an issue updating stock. Please contact support.', 'warning');
+      
+      // Even if there's an error, clear the cart to avoid confusion
+      setCart([]);
+      setIsCartOpen(false);
     }
   };
 
@@ -352,12 +496,15 @@ const SweetShopPage: React.FC = () => {
   const globalCategories = ['European', 'Middle Eastern', 'French', 'American', 'Japanese', 'Spanish', 'Australian', 'Italian', 'Latin American'];
 
   const getFilteredSweets = () => {
+    // Use shuffledSweets if available (for signed-in users), otherwise use regular sweets
+    const sweetsToFilter = isSignedIn && shuffledSweets.length > 0 ? shuffledSweets : sweets;
+    
     if (sweetFilter === 'indian') {
-      return sweets.filter(sweet => indianCategories.includes(sweet.category));
+      return sweetsToFilter.filter(sweet => indianCategories.includes(sweet.category));
     } else if (sweetFilter === 'global') {
-      return sweets.filter(sweet => globalCategories.includes(sweet.category));
+      return sweetsToFilter.filter(sweet => globalCategories.includes(sweet.category));
     }
-    return sweets; // 'all' case
+    return sweetsToFilter; // 'all' case
   };
 
   const filteredSweets = getFilteredSweets();
@@ -461,6 +608,8 @@ const SweetShopPage: React.FC = () => {
         <Navigation
         isSignedIn={isSignedIn}
         isAdmin={isAdmin}
+        userEmail={user?.email}
+        userName={user?.name}
         totalItems={totalItems}
         onCartToggle={() => setIsCartOpen(!isCartOpen)}
         onSignOut={signOut}
@@ -470,7 +619,7 @@ const SweetShopPage: React.FC = () => {
 
       <CartSidebar
         isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
+        onClose={handleCartClose}
         cartItems={cart}
         totalPrice={totalPrice}
         onUpdateQuantity={handleUpdateCartQuantity}
@@ -511,7 +660,7 @@ const SweetShopPage: React.FC = () => {
         </section>
 
         {/* Complete Collection Section */}
-        <section id="explore" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section id="complete-collection" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
               <span className="text-2xl">🍭</span>
@@ -568,7 +717,7 @@ const SweetShopPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {[...filteredSweets].sort(() => Math.random() - 0.5).map((sweet, index) => (
+              {filteredSweets.map((sweet, index) => (
                 <div
                   key={sweet.id}
                   className="animate-fade-in-up"
@@ -576,6 +725,7 @@ const SweetShopPage: React.FC = () => {
                 >
                   <SweetCard
                     sweet={sweet}
+                    displayStock={displayStock[sweet.id]}
                     onAddToCart={() => handleAddToCart(sweet)}
                   />
                 </div>
@@ -598,7 +748,7 @@ const SweetShopPage: React.FC = () => {
                   onClick={createSampleBox}
                   className="bg-gradient-to-r from-brand-orange to-yellow-500 hover:from-yellow-500 hover:to-brand-orange text-white font-bold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
                 >
-                  Order Sampler Box - Up to ₹550 🍬
+                  Order Sample Box 🍬
                 </button>
               </div>
             </div>

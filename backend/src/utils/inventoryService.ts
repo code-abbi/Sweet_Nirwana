@@ -11,6 +11,7 @@ export interface PurchaseResult {
 
 export interface RestockResult {
   success: boolean;
+  error?: string;
   transaction?: any;
   newStock?: number;
 }
@@ -49,7 +50,7 @@ export class InventoryService {
         return { success: false, error: 'Sweet not found in inventory' };
       }
 
-      const currentStock = inventoryItem[0].quantity;
+      const currentStock = inventoryItem[0]?.quantity || 0;
       
       // Check if sufficient stock is available
       if (currentStock < quantity) {
@@ -111,22 +112,26 @@ export class InventoryService {
       
       if (!inventoryItem.length) {
         // Create new inventory entry if it doesn't exist
-        const [newInventoryItem] = await db
+        const newInventoryItems = await db
           .insert(inventory)
           .values({
             sweetId,
             quantity,
-            price: 0, // Price will be set separately
+            price: '0', // Price will be set separately (decimal string)
             lastRestocked: new Date(),
             restockedBy: userId,
             lastUpdated: new Date()
           })
           .returning();
         
-        currentStock = newInventoryItem.quantity;
+        if (!newInventoryItems.length || !newInventoryItems[0]) {
+          return { success: false, error: 'Failed to create inventory entry' };
+        }
+        
+        currentStock = newInventoryItems[0].quantity;
       } else {
         // Update existing inventory
-        currentStock = inventoryItem[0].quantity + quantity;
+        currentStock = (inventoryItem[0]?.quantity || 0) + quantity;
         
         await db
           .update(inventory)

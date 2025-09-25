@@ -11,11 +11,13 @@ const getImageUrl = (imageUrl?: string) => {
 
 interface SweetCardProps {
   sweet: Sweet;
+  displayStock?: number;
   onAddToCart: () => void;
 }
 
-export const SweetCard: React.FC<SweetCardProps> = ({ sweet, onAddToCart }) => {
-  const isOutOfStock = sweet.quantity === 0;
+export const SweetCard: React.FC<SweetCardProps> = ({ sweet, displayStock, onAddToCart }) => {
+  const currentStock = displayStock ?? sweet.quantity;
+  const isOutOfStock = currentStock === 0;
   
   // Only show Popular badge for specific sweets (~25% of sweets) - Mix of traditional and global favorites
   const popularSweets = ['Kaju Katli', 'Gulab Jamun', 'Rasgulla', 'Rasmalai', 'Tiramisu', 'New York Cheesecake'];
@@ -83,7 +85,7 @@ export const SweetCard: React.FC<SweetCardProps> = ({ sweet, onAddToCart }) => {
         <div className="flex justify-between items-center mt-4">
           <div>
             <p className="text-xl font-bold text-brand-orange">₹{sweet.price}</p>
-            <p className="text-xs text-gray-400">Stock: {sweet.quantity}</p>
+            <p className="text-xs text-gray-400">Stock: {currentStock}</p>
           </div>
           <button
             onClick={onAddToCart}

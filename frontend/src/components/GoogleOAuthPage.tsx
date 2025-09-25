@@ -213,34 +213,6 @@ const GoogleOAuthPage: React.FC<GoogleOAuthPageProps> = ({ onSignIn, onCancel })
             ))}
           </div>
 
-          {/* Enhanced "Use Another Account" Button */}
-          <div className={`transform transition-all duration-500 ${
-            showAccounts ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-          }`} style={{ transitionDelay: '500ms' }}>
-            <button
-              onClick={() => {
-                const email = prompt('🎭 Enter your magical Google account email:');
-                if (email) {
-                  handleAccountSelect(email);
-                }
-              }}
-              disabled={isLoading}
-              className="w-full flex items-center p-4 rounded-2xl border-2 border-dashed border-purple-300 hover:border-purple-500 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-300 text-left mt-6 group"
-            >
-              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-gray-300 to-gray-400 rounded-full flex items-center justify-center mr-4 group-hover:bg-gradient-to-br group-hover:from-purple-400 group-hover:to-pink-400 transition-all duration-300 group-hover:rotate-180">
-                <svg className="w-6 h-6 text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </div>
-              <div className="text-sm font-bold text-gray-700 group-hover:text-purple-700 transition-colors duration-300">
-                ✨ Use another account
-              </div>
-              <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-full">Click me!</span>
-              </div>
-            </button>
-          </div>
-
           {/* Enhanced Footer with Gradients */}
           <div className="mt-8 pt-6 border-t border-gradient-to-r from-purple-200 to-pink-200">
             <div className="flex justify-between items-center">

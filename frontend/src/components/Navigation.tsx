@@ -12,10 +12,11 @@
  * - Responsive design for mobile and desktop
  * - Gradient brand styling and animations
  * - Role-based UI (admin vs regular user)
+ * - User profile dropdown with email and sign out
  */
 
-import React from 'react';
-import { ShoppingCartIcon, UserCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
+import React, { useState, useRef, useEffect } from 'react';
+import { ShoppingCartIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
 /**
  * Props interface for Navigation component
@@ -24,6 +25,8 @@ import { ShoppingCartIcon, UserCircleIcon, ArrowRightOnRectangleIcon } from '@he
 interface NavigationProps {
   isSignedIn: boolean;      // Current user authentication status
   isAdmin: boolean;         // Whether current user has admin privileges  
+  userEmail?: string;       // User's email address for display
+  userName?: string;        // User's name for display
   totalItems: number;       // Number of items in shopping cart
   onCartToggle: () => void; // Handler to open/close cart sidebar
   onSignOut: () => void;    // Handler for user logout
@@ -40,12 +43,40 @@ interface NavigationProps {
 export const Navigation: React.FC<NavigationProps> = ({
   isSignedIn,
   isAdmin,
+  userEmail,
+  userName,
   totalItems,
   onCartToggle,
   onSignOut,
   onSignIn,
   onAdminPanel,
 }) => {
+  // State for user profile dropdown
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Get user initial for the circle
+  const getUserInitial = (email?: string) => {
+    if (!email) return '?';
+    return email.charAt(0).toUpperCase();
+  };
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSignOut = () => {
+    setIsDropdownOpen(false);
+    onSignOut();
+  };
   return (
     <nav className="bg-brand-bg-light/80 backdrop-blur-md shadow-sm sticky top-0 z-30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -71,6 +102,8 @@ export const Navigation: React.FC<NavigationProps> = ({
                   Traditional Indian Sweets Since 1947
                 </p>
               </div>
+
+
             </div>
           </div>
 
@@ -90,21 +123,71 @@ export const Navigation: React.FC<NavigationProps> = ({
 
             {isSignedIn ? (
               <div className="flex items-center space-x-4">
+                {/* Welcome Message between Cart and User Circle */}
+                {userName && (
+                  <div className="hidden md:block">
+                    <p className="text-brand-palace font-medium">
+                      Welcome, <span className="font-semibold">{userName.split(' ')[0]}</span>!
+                    </p>
+                  </div>
+                )}
+                {/* User Profile Dropdown */}
+                <div className="relative" ref={dropdownRef}>
+                  {/* User Profile Button */}
+                  <button
+                    onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                    className="p-1 rounded-full hover:bg-brand-palace/10 transition-colors"
+                  >
+                    {/* User Initial Circle */}
+                    <div className="w-10 h-10 bg-gradient-to-br from-brand-orange to-brand-palace rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-shadow cursor-pointer">
+                      <span className="text-white text-sm font-bold">
+                        {getUserInitial(userEmail)}
+                      </span>
+                    </div>
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {isDropdownOpen && (
+                    <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                      {/* User Info Section */}
+                      <div className="px-4 py-3 border-b border-gray-100">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-12 h-12 bg-gradient-to-br from-brand-orange to-brand-palace rounded-full flex items-center justify-center shadow-md">
+                            <span className="text-white text-lg font-bold">
+                              {getUserInitial(userEmail)}
+                            </span>
+                          </div>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-gray-900">
+                              {userName || 'User'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Sign Out Button */}
+                      <div className="px-2 py-1">
+                        <button
+                          onClick={handleSignOut}
+                          className="w-full flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-red-50 hover:text-red-600 rounded-md transition-colors"
+                        >
+                          <ArrowRightOnRectangleIcon className="w-4 h-4 mr-3" />
+                          Sign Out
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Admin Panel Button - After user circle */}
                 {isAdmin && onAdminPanel && (
                   <button
                     onClick={onAdminPanel}
-                    className="text-sm font-semibold bg-brand-palace/10 text-brand-palace px-3 py-1 rounded-full hover:bg-brand-palace/20 transition-colors"
+                    className="hidden md:flex items-center text-sm font-semibold bg-brand-palace/10 text-brand-palace px-3 py-2 rounded-full hover:bg-brand-palace/20 transition-colors"
                   >
                     Admin Panel
                   </button>
                 )}
-                <button
-                  onClick={onSignOut}
-                  className="flex items-center text-sm text-brand-palace/70 hover:text-brand-palace transition-colors"
-                >
-                  <ArrowRightOnRectangleIcon className="w-5 h-5 mr-1" />
-                  Sign Out
-                </button>
               </div>
             ) : (
               <button 

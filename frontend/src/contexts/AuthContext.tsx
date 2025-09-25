@@ -12,7 +12,7 @@
  * - Global authentication context
  */
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 /**
  * User interface for authenticated users
@@ -30,6 +30,7 @@ interface User {
 interface AuthContextType {
   isSignedIn: boolean;
   user: User | null;
+  isLoading: boolean;
   signIn: (email: string) => void;
   signOut: () => void;
 }
@@ -61,6 +62,45 @@ export const useAuth = () => {
  */
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Load user from localStorage on app start
+  useEffect(() => {
+    try {
+      const savedUser = localStorage.getItem('sweet_shop_user');
+      if (savedUser) {
+        const parsedUser = JSON.parse(savedUser);
+        // Force refresh if old data format (no proper name)
+        if (parsedUser.email && parsedUser.name && parsedUser.name.includes('abhi2018')) {
+          console.log('Clearing old user data format');
+          localStorage.removeItem('sweet_shop_user');
+          setUser(null);
+        } else {
+          setUser(parsedUser);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to load user from localStorage:', error);
+      localStorage.removeItem('sweet_shop_user'); // Clear corrupted data
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Save user to localStorage whenever user state changes
+  useEffect(() => {
+    if (!isLoading) {
+      try {
+        if (user) {
+          localStorage.setItem('sweet_shop_user', JSON.stringify(user));
+        } else {
+          localStorage.removeItem('sweet_shop_user');
+        }
+      } catch (error) {
+        console.error('Failed to save user to localStorage:', error);
+      }
+    }
+  }, [user, isLoading]);
 
   /**
    * Sign in a user with email
@@ -71,10 +111,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     // Check if user has admin privileges (specific email)
     const isAdmin = email === 'wildrabit001@gmail.com';
     
-    // Extract display name from email (part before @)
-    const name = email.split('@')[0].replace(/[._]/g, ' ');
+    // Map of known Google accounts with their proper names
+    const knownAccounts: { [key: string]: string } = {
+      'tomar.abhi2018@gmail.com': 'Abbi Tomar',
+      'abittomar001@gmail.com': 'Abi tomar', 
+      'wildrabit001@gmail.com': 'wild raBit',
+      'atomar003.mca2023@cca.nittr.ac.in': 'Abhishek Tomar',
+      'lto3.fake@gmail.com': 'one last'
+    };
     
-    // Set user state
+    // Use proper name if known, otherwise extract from email
+    const name = knownAccounts[email] || email.split('@')[0].replace(/[._]/g, ' ');
+    
+    // Set user state (this will trigger localStorage save)
     setUser({
       id: '1',
       name: name,
@@ -87,14 +136,27 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
    * Sign out the current user
    */
   const signOut = () => {
-    setUser(null);
+    setUser(null); // This will trigger localStorage removal
   };
+
+  // Show loading screen while checking for saved user
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-brand-orange border-t-transparent mx-auto mb-4"></div>
+          <p className="text-white text-lg">Loading Sweet Nirvana...</p>
+        </div>
+      </div>
+    );
+  }
 
   // Provide authentication context to children
   return (
     <AuthContext.Provider value={{
       isSignedIn: !!user,
       user,
+      isLoading,
       signIn,
       signOut
     }}>

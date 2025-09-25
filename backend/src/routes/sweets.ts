@@ -56,24 +56,10 @@ router.put('/:id', sweetsController.updateSweet);
 router.delete('/:id', sweetsController.deleteSweet);
 
 /**
- * @route   POST /api/sweets/copy-image
- * @desc    Copy image from Downloads to sweet-images directory
- * @access  Public (for demo)
- */
-router.post('/copy-image', sweetsController.copyImageFromDownloads);
-
-/**
  * @route   POST /api/sweets/upload-image
  * @desc    Upload image file directly to sweet-images directory
  * @access  Public (for demo)
  */
 router.post('/upload-image', sweetsController.uploadImage);
-
-/**
- * @route   PUT /api/sweets/bulk-update-images
- * @desc    Update images for newly added global desserts
- * @access  Public (for demo)
- */
-router.put('/bulk-update-images', sweetsController.bulkUpdateImages);
 
 export default router;

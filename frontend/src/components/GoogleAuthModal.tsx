@@ -209,33 +209,7 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
             ))}
           </div>
 
-          {/* Use Another Account */}
-          <div className={`transform transition-all duration-500 mt-4 ${
-            showAccounts ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
-          }`} style={{ transitionDelay: '500ms' }}>
-            <button
-              onClick={() => {
-                const email = prompt('🎭 Enter your Google account email:');
-                if (email) {
-                  handleAccountSelect(email);
-                }
-              }}
-              disabled={isLoading}
-              className="w-full flex items-center p-4 rounded-xl border-2 border-dashed border-white/30 hover:border-brand-orange hover:bg-brand-orange/10 transition-all duration-300 text-left group"
-            >
-              <div className="flex-shrink-0 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mr-4 group-hover:bg-brand-orange transition-all duration-300">
-                <svg className="w-6 h-6 text-gray-300 group-hover:text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-              </div>
-              <div className="text-sm font-bold text-white group-hover:text-brand-orange transition-colors duration-300">
-                ✨ Use another account
-              </div>
-              <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-xs bg-brand-orange/20 text-brand-orange px-2 py-1 rounded-full">Click me!</span>
-              </div>
-            </button>
-          </div>
+
         </div>
 
         {/* Footer */}
