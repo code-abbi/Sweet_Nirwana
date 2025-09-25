@@ -1,5 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
-import { JWTUtils } from '../utils/auth';
+import jwt from 'jsonwebtoken';
+
+// JWT secret key
+const JWT_SECRET = process.env.JWT_SECRET || 'sweet-shop-secret-key';
 
 /**
  * Authentication middleware to protect routes
@@ -11,36 +14,40 @@ export function authenticateToken(req: Request, res: Response, next: NextFunctio
   if (!token) {
     res.status(401).json({
       success: false,
-      error: 'Access token required',
+      message: 'Authentication required'
     });
     return;
   }
 
-  const decoded = JWTUtils.verifyToken(token);
-  
-  if (!decoded) {
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    
+    // Add user info to request object
+    (req as any).user = {
+      userId: decoded.userId,
+      email: decoded.email,
+      role: decoded.role
+    };
+    
+    next();
+  } catch (error) {
     res.status(401).json({
       success: false,
-      error: 'Invalid token',
+      message: 'Invalid token'
     });
     return;
   }
-
-  // Add user info to request object
-  req.userId = decoded.userId;
-  req.userRole = decoded.userRole as 'admin' | 'user';
-  
-  next();
 }
 
 /**
  * Authorization middleware to check for admin role
  */
 export function requireAdmin(req: Request, res: Response, next: NextFunction): void {
-  if (req.userRole !== 'admin') {
+  const user = (req as any).user;
+  if (!user || user.role !== 'admin') {
     res.status(403).json({
       success: false,
-      error: 'Admin access required',
+      message: 'Admin access required'
     });
     return;
   }

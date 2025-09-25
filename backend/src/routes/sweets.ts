@@ -29,10 +29,10 @@ router.get('/:id', sweetsController.getSweetById);
 
 /**
  * @route   POST /api/sweets
- * @desc    Create new sweet (demo mode - no auth required)
- * @access  Public (for demo)
+ * @desc    Create new sweet (admin only)
+ * @access  Admin
  */
-router.post('/', sweetsController.createSweet);
+router.post('/', authenticateToken, requireAdmin, sweetsController.createSweet);
 
 /**
  * @route   PUT /api/sweets/:id/stock
@@ -43,10 +43,10 @@ router.put('/:id/stock', sweetsController.updateStock);
 
 /**
  * @route   PUT /api/sweets/:id
- * @desc    Update sweet (demo mode)
- * @access  Public (for demo)
+ * @desc    Update sweet (admin only)
+ * @access  Admin
  */
-router.put('/:id', sweetsController.updateSweet);
+router.put('/:id', authenticateToken, requireAdmin, sweetsController.updateSweet);
 
 /**
  * @route   DELETE /api/sweets/:id

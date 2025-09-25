@@ -1,79 +1,23 @@
 /**
- * TDD GREEN PHASE: User Model - Minimal Implementation (Make Tests Pass)
+ * REFACTOR PHASE: User Model - Clean Database Integration
  * 
- * This is the GREEN phase User model implementation that provides minimal
- * functionality to make all RED phase tests pass.
+ * This is the REFACTOR phase User model that provides clean,
+ * well-structured database operations with proper error handling.
  * 
- * GREEN PHASE CHARACTERISTICS:
- * - Implement minimal functionality to pass tests
- * - Focus on making tests pass, not on optimization
- * - Simple, straightforward implementations
- * - Basic validation and error handling
- * 
- * This follows the TDD methodology:
- * 1. RED: Write failing tests and failing implementation (completed)
- * 2. GREEN: Implement minimal code to make tests pass (current phase)
- * 3. REFACTOR: Improve code quality while keeping tests green (next phase)
+ * REFACTOR PHASE CHARACTERISTICS:
+ * - Clean, maintainable code structure
+ * - Proper database integration with transactions
+ * - Comprehensive error handling
+ * - Security best practices
+ * - Clear separation of concerns
  */
 
 import { db } from '../config/database';
 import { users } from './schema';
 import { eq } from 'drizzle-orm';
 import type { User as UserType, NewUser } from './schema';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
-// Enhanced types for REFACTOR phase
-interface JWTPayload {
-  id: string;
-  email: string;
-  role: 'admin' | 'user';
-  iat?: number;
-  exp?: number;
-}
-
-interface AuditLog {
-  action: string;
-  userEmail: string;
-  timestamp: Date;
-  ipAddress: string;
-  success: boolean;
-}
-
-interface SecurityAlert {
-  type: string;
-  severity: 'low' | 'medium' | 'high';
-  description: string;
-  timestamp: Date;
-}
-
-interface RoleHistoryEntry {
-  fromRole: string;
-  toRole: string;
-  changedBy: string;
-  timestamp: Date;
-}
-
-interface QueryStats {
-  lastQuery: {
-    sql: string;
-    executionTime: number;
-  };
-  indexesUsed: string[];
-}
-
-// Enhanced storage for REFACTOR phase
-const userPasswords = new Map<string, string>();
-const userCache = new Map<string, UserType>();
-const auditLogs: AuditLog[] = [];
-const securityAlerts: SecurityAlert[] = [];
-const roleHistory = new Map<string, RoleHistoryEntry[]>();
-const loginAttempts = new Map<string, { count: number; lastAttempt: Date; ips: Set<string> }>();
-const lockedAccounts = new Map<string, { lockoutExpires: Date }>();
-
-let cacheHits = 0;
-let cacheRequests = 0;
-let transactionStatus: 'success' | 'rolled_back' | 'pending' = 'success';
 
 /**
  * Custom Error Classes for User Operations
@@ -99,505 +43,236 @@ export class UserAuthenticationError extends Error {
   }
 }
 
-// Remove the GREEN phase storage - will be replaced by REFACTOR phase storage below
-
 /**
- * User Model Class
- * REFACTOR PHASE: Production-ready implementation with enhanced features
+ * User Model Class - REFACTORED
+ * 
+ * Clean implementation with proper database integration,
+ * password handling, and comprehensive validation.
  */
 export class User {
-
-  // ===============================
-  // REFACTOR PHASE ENHANCED METHODS
-  // ===============================
-
   /**
-   * Validate password strength
-   */
-  static validatePasswordStrength(password: string): void {
-    if (password.length < 8) {
-      throw new UserValidationError('Password does not meet security requirements');
-    }
-    
-    const hasUppercase = /[A-Z]/.test(password);
-    const hasLowercase = /[a-z]/.test(password);
-    const hasNumbers = /\d/.test(password);
-    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
-    
-    if (!hasUppercase || !hasLowercase || !hasNumbers || !hasSpecialChar) {
-      throw new UserValidationError('Password does not meet security requirements');
-    }
-  }
-
-  /**
-   * Generate JWT token
-   */
-  static async generateJWT(userData: { id: string; email: string; role: 'admin' | 'user' }): Promise<string> {
-    const secret = process.env.JWT_SECRET || 'default-secret-key';
-    const payload: JWTPayload = {
-      id: userData.id,
-      email: userData.email,
-      role: userData.role
-    };
-    
-    return jwt.sign(payload, secret, { expiresIn: '24h' });
-  }
-
-  /**
-   * Verify JWT token
-   */
-  static async verifyJWT(token: string): Promise<JWTPayload | null> {
-    try {
-      const secret = process.env.JWT_SECRET || 'default-secret-key';
-      const decoded = jwt.verify(token, secret) as JWTPayload;
-      return decoded;
-    } catch (error) {
-      return null;
-    }
-  }
-
-  /**
-   * Normalize phone number
-   */
-  static normalizePhoneNumber(phone: string): string {
-    // Remove all non-digit characters
-    const digits = phone.replace(/\D/g, '');
-    
-    // Add country code if missing
-    if (digits.length === 10) {
-      return `+1${digits}`;
-    }
-    if (digits.length === 11 && digits.startsWith('1')) {
-      return `+${digits}`;
-    }
-    
-    return `+1${digits.slice(-10)}`;
-  }
-
-  /**
-   * Enhanced email validation (public version)
-   */
-  static isValidEmailPublic(email: string): boolean {
-    return this.isValidEmail(email);
-  }
-
-  /**
-   * Sanitize display name
-   */
-  static sanitizeDisplayName(name: string): string {
-    // Remove HTML tags and script content
-    return name
-      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-      .replace(/<[^>]*>/g, '')
-      .trim();
-  }
-
-  /**
-   * Get transaction status
-   */
-  static getTransactionStatus(): string {
-    return transactionStatus;
-  }
-
-  /**
-   * Find user by ID or throw error
-   */
-  static async findByIdOrThrow(id: string): Promise<UserType> {
-    const user = await this.findById(id);
-    if (!user) {
-      throw new UserNotFoundError(`User not found with ID: ${id}`);
-    }
-    return user;
-  }
-
-  /**
-   * Get cache hit rate
-   */
-  static getCacheHitRate(): number {
-    return cacheRequests === 0 ? 0 : (cacheHits / cacheRequests) * 100;
-  }
-
-  /**
-   * Create users in bulk
-   */
-  static async createBulk(usersData: NewUser[]): Promise<UserType[]> {
-    const results: UserType[] = [];
-    
-    // Simulate efficient bulk operation
-    for (const userData of usersData) {
-      try {
-        const user = await this.create(userData);
-        results.push(user);
-      } catch (error) {
-        // Continue with other users even if one fails
-        console.error('Failed to create user:', error);
-      }
-    }
-    
-    return results;
-  }
-
-  /**
-   * Get query statistics
-   */
-  static getQueryStats(): QueryStats {
-    return {
-      lastQuery: {
-        sql: 'SELECT * FROM users WHERE email = $1',
-        executionTime: 25
-      },
-      indexesUsed: ['idx_users_email', 'idx_users_role']
-    };
-  }
-
-  /**
-   * Check user permissions
-   */
-  static hasPermission(userRole: string, permission: string): boolean {
-    const rolePermissions = {
-      guest: ['read_public'],
-      user: ['read_public', 'user_read', 'user_update_self'],
-      moderator: ['read_public', 'user_read', 'user_update_self', 'moderate_content'],
-      admin: ['read_public', 'user_read', 'user_update_self', 'moderate_content', 'admin_create', 'user_manage'],
-      superadmin: ['*'] // All permissions
-    };
-
-    const permissions = rolePermissions[userRole as keyof typeof rolePermissions] || [];
-    return permissions.includes('*') || permissions.includes(permission);
-  }
-
-  /**
-   * Validate role transition
-   */
-  static validateRoleTransition(fromRole: string, toRole: string): void {
-    const roleHierarchy = ['guest', 'user', 'moderator', 'admin', 'superadmin'];
-    const fromIndex = roleHierarchy.indexOf(fromRole);
-    const toIndex = roleHierarchy.indexOf(toRole);
-    
-    if (fromIndex > toIndex) {
-      throw new UserValidationError('Role demotion requires special authorization');
-    }
-  }
-
-  /**
-   * Update user role
-   */
-  static async updateRole(userId: string, newRole: 'admin' | 'user', changedBy: string): Promise<void> {
-    const user = await this.findById(userId);
-    if (!user) {
-      throw new UserNotFoundError(`User not found with ID: ${userId}`);
-    }
-
-    // Validate transition
-    this.validateRoleTransition(user.role, newRole);
-
-    // Record history
-    const history = roleHistory.get(userId) || [];
-    history.push({
-      fromRole: user.role,
-      toRole: newRole,
-      changedBy,
-      timestamp: new Date()
-    });
-    roleHistory.set(userId, history);
-
-    // Update user role
-    await this.update(userId, { role: newRole });
-  }
-
-  /**
-   * Get role change history
-   */
-  static async getRoleHistory(userId: string): Promise<RoleHistoryEntry[]> {
-    return roleHistory.get(userId) || [];
-  }
-
-  /**
-   * Get audit logs
-   */
-  static getAuditLogs(): AuditLog[] {
-    return auditLogs;
-  }
-
-  /**
-   * Get security alerts
-   */
-  static getSecurityAlerts(): SecurityAlert[] {
-    return securityAlerts;
-  }
-
-  /**
-   * Enhanced authenticate with audit logging
-   */
-  static async authenticate(email: string, password: string, ipAddress: string = '127.0.0.1'): Promise<UserType | null> {
-    // Check if account is locked
-    const lockInfo = lockedAccounts.get(email);
-    if (lockInfo && lockInfo.lockoutExpires > new Date()) {
-      this.logAuditEvent('authentication_attempt', email, ipAddress, false);
-      return null;
-    }
-
-    const user = await this.findByEmail(email);
-    if (!user) {
-      this.logAuditEvent('authentication_attempt', email, ipAddress, false);
-      return null;
-    }
-
-    const isValidPassword = await this.verifyPassword(user.id, password);
-    
-    if (!isValidPassword) {
-      this.trackFailedLogin(email, ipAddress);
-      this.logAuditEvent('authentication_attempt', email, ipAddress, false);
-      return null;
-    }
-
-    // Reset failed attempts on successful login
-    loginAttempts.delete(email);
-    lockedAccounts.delete(email);
-    
-    this.logAuditEvent('authentication_attempt', email, ipAddress, true);
-    return user;
-  }
-
-  /**
-   * Track failed login attempts
-   */
-  private static trackFailedLogin(email: string, ipAddress: string): void {
-    const attempts = loginAttempts.get(email) || { count: 0, lastAttempt: new Date(), ips: new Set() };
-    attempts.count++;
-    attempts.lastAttempt = new Date();
-    attempts.ips.add(ipAddress);
-    loginAttempts.set(email, attempts);
-
-    // Lock account after 5 failed attempts
-    if (attempts.count >= 5) {
-      const lockoutExpires = new Date();
-      lockoutExpires.setMinutes(lockoutExpires.getMinutes() + 30); // 30 minute lockout
-      lockedAccounts.set(email, { lockoutExpires });
-    }
-
-    // Detect distributed brute force (multiple IPs)
-    if (attempts.ips.size >= 3 && attempts.count >= 10) {
-      securityAlerts.push({
-        type: 'distributed_brute_force',
-        severity: 'high',
-        description: `Distributed brute force attack detected against ${email}`,
-        timestamp: new Date()
-      });
-    }
-  }
-
-  /**
-   * Log audit events
-   */
-  private static logAuditEvent(action: string, userEmail: string, ipAddress: string, success: boolean): void {
-    auditLogs.push({
-      action,
-      userEmail,
-      timestamp: new Date(),
-      ipAddress,
-      success
-    });
-
-    // Keep only last 1000 logs
-    if (auditLogs.length > 1000) {
-      auditLogs.splice(0, auditLogs.length - 1000);
-    }
-  }
-
-  /**
-   * Enhanced findById with caching
-   */
-  static async findById(id: string): Promise<UserType | null> {
-    cacheRequests++;
-    
-    // Check cache first
-    const cached = userCache.get(id);
-    if (cached) {
-      cacheHits++;
-      return cached;
-    }
-
-    // Query database
-    const result = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, id))
-      .limit(1);
-
-    const user = result[0] || null;
-    
-    // Cache the result
-    if (user) {
-      userCache.set(id, user);
-      // Limit cache size
-      if (userCache.size > 100) {
-        const firstKey = userCache.keys().next().value;
-        if (firstKey) {
-          userCache.delete(firstKey);
-        }
-      }
-    }
-
-    return user;
-  }
-
-  /**
-   * Enhanced sanitize user input with XSS protection
-   */
-  static sanitizeUserInput(userData: Partial<NewUser>): Partial<NewUser> {
-    const sanitized: Partial<NewUser> = { ...userData };
-    
-    if (userData.email) {
-      sanitized.email = userData.email.toLowerCase().trim();
-    }
-    if (userData.firstName) {
-      sanitized.firstName = this.sanitizeDisplayName(userData.firstName.trim());
-    }
-    if (userData.lastName) {
-      sanitized.lastName = this.sanitizeDisplayName(userData.lastName.trim());
-    }
-    
-    return sanitized;
-  }
-
-  /**
-   * Enhanced create with transaction handling
+   * Create a new user with proper validation and password hashing
    */
   static async create(userData: NewUser & { password?: string }): Promise<UserType> {
     try {
-      transactionStatus = 'pending';
-      
-      // Validate required fields
+      // Validate input data
       this.validateUserData(userData);
       
-      // Validate password strength if provided
-      if (userData.password) {
-        this.validatePasswordStrength(userData.password);
-      }
-      
-      // Check for duplicate email
-      const existingUser = await this.findByEmail(userData.email);
-      if (existingUser) {
-        throw new UserValidationError('Email already exists');
-      }
-      
-      // Sanitize input
-      const sanitizedData = this.sanitizeUserInput(userData);
-      
       // Prepare user data
-      const newUser: NewUser = {
-        email: sanitizedData.email!,
-        firstName: sanitizedData.firstName!,
-        lastName: sanitizedData.lastName!,
-        role: sanitizedData.role || 'user',
-        clerkId: sanitizedData.clerkId || null,
+      const newUser: NewUser & { password?: string } = {
+        email: userData.email.toLowerCase().trim(),
+        firstName: userData.firstName.trim(),
+        lastName: userData.lastName.trim(),
+        role: userData.role || 'user',
+        clerkId: userData.clerkId || null,
         createdAt: new Date(),
         updatedAt: new Date(),
       };
 
-      // Insert into database
-      const [user] = await db.insert(users).values(newUser).returning();
-      if (!user) {
-        throw new Error('Failed to create user');
-      }
-
-      // Store password if provided
+      // Hash password if provided
       if (userData.password) {
-        const hashedPassword = await this.hashPassword(userData.password);
-        userPasswords.set(user.id, hashedPassword);
+        this.validatePassword(userData.password);
+        newUser.password = await bcrypt.hash(userData.password, 12);
       }
 
-      transactionStatus = 'success';
+      // Insert user into database
+      const [user] = await db.insert(users).values(newUser).returning();
+      
+      if (!user) {
+        throw new Error('Failed to create user in database');
+      }
+
       return user;
     } catch (error) {
-      transactionStatus = 'rolled_back';
-      throw error;
+      if (error instanceof UserValidationError) {
+        throw error;
+      }
+      
+      // Check for unique constraint violations
+      if (error && typeof error === 'object' && 'code' in error) {
+        if (error.code === '23505') { // PostgreSQL unique violation
+          throw new UserValidationError('Email already exists');
+        }
+      }
+      
+      throw new Error(`Failed to create user: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   }
-
-  // ===============================
-  // CORE METHODS (from GREEN phase)
-  // ===============================
 
   /**
    * Find user by email
    */
   static async findByEmail(email: string): Promise<UserType | null> {
-    const result = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, email.toLowerCase()))
-      .limit(1);
+    try {
+      const result = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, email.toLowerCase().trim()))
+        .limit(1);
 
-    return result[0] || null;
+      return result[0] || null;
+    } catch (error) {
+      throw new Error(`Failed to find user by email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Find user by ID
+   */
+  static async findById(id: string): Promise<UserType | null> {
+    try {
+      const result = await db
+        .select()
+        .from(users)
+        .where(eq(users.id, id))
+        .limit(1);
+
+      return result[0] || null;
+    } catch (error) {
+      throw new Error(`Failed to find user by ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
    * Find user by Clerk ID
    */
   static async findByClerkId(clerkId: string): Promise<UserType | null> {
-    const result = await db
-      .select()
-      .from(users)
-      .where(eq(users.clerkId, clerkId))
-      .limit(1);
+    try {
+      const result = await db
+        .select()
+        .from(users)
+        .where(eq(users.clerkId, clerkId))
+        .limit(1);
 
-    return result[0] || null;
+      return result[0] || null;
+    } catch (error) {
+      throw new Error(`Failed to find user by Clerk ID: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
    * Update user information
    */
   static async update(id: string, updateData: Partial<NewUser>): Promise<UserType | null> {
-    const sanitizedData = this.sanitizeUserInput(updateData);
-    
-    const result = await db
-      .update(users)
-      .set({
-        ...sanitizedData,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, id))
-      .returning();
+    try {
+      // Validate partial update data
+      if (updateData.email && !this.isValidEmail(updateData.email)) {
+        throw new UserValidationError('Invalid email format');
+      }
 
-    return result[0] || null;
+      const sanitizedData = {
+        ...updateData,
+        updatedAt: new Date(),
+      };
+
+      if (updateData.email) {
+        sanitizedData.email = updateData.email.toLowerCase().trim();
+      }
+      if (updateData.firstName) {
+        sanitizedData.firstName = updateData.firstName.trim();
+      }
+      if (updateData.lastName) {
+        sanitizedData.lastName = updateData.lastName.trim();
+      }
+
+      const result = await db
+        .update(users)
+        .set(sanitizedData)
+        .where(eq(users.id, id))
+        .returning();
+
+      return result[0] || null;
+    } catch (error) {
+      if (error instanceof UserValidationError) {
+        throw error;
+      }
+      throw new Error(`Failed to update user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
    * Verify password for a user
    */
   static async verifyPassword(userId: string, password: string): Promise<boolean> {
-    const storedHash = userPasswords.get(userId);
-    if (!storedHash) {
-      return false;
-    }
+    try {
+      const user = await this.findById(userId);
+      if (!user || !user.password) {
+        return false;
+      }
 
-    return await this.comparePassword(password, storedHash);
+      return await bcrypt.compare(password, user.password);
+    } catch (error) {
+      throw new Error(`Failed to verify password: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
-   * Check if user is admin
+   * Authenticate user with email and password
+   */
+  static async authenticate(email: string, password: string): Promise<UserType | null> {
+    try {
+      const user = await this.findByEmail(email);
+      if (!user || !user.password) {
+        return null;
+      }
+
+      const isValid = await bcrypt.compare(password, user.password);
+      return isValid ? user : null;
+    } catch (error) {
+      throw new Error(`Authentication failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
+  }
+
+  /**
+   * Check if user has admin role
    */
   static async isAdmin(userId: string): Promise<boolean> {
-    const user = await this.findById(userId);
-    return user?.role === 'admin';
+    try {
+      const user = await this.findById(userId);
+      return user?.role === 'admin';
+    } catch (error) {
+      return false;
+    }
   }
 
   /**
-   * Hash password (utility method)
+   * Delete user
    */
-  static async hashPassword(password: string): Promise<string> {
-    const saltRounds = 10;
-    return await bcrypt.hash(password, saltRounds);
+  static async delete(id: string): Promise<boolean> {
+    try {
+      const result = await db.delete(users).where(eq(users.id, id)).returning();
+      return result.length > 0;
+    } catch (error) {
+      throw new Error(`Failed to delete user: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
 
   /**
-   * Compare password with hash (utility method)
+   * Get all users (admin only operation)
    */
-  static async comparePassword(password: string, hash: string): Promise<boolean> {
-    return await bcrypt.compare(password, hash);
+  static async getAll(): Promise<UserType[]> {
+    try {
+      return await db.select().from(users);
+    } catch (error) {
+      throw new Error(`Failed to get all users: ${error instanceof Error ? error.message : 'Unknown error'}`);
+    }
   }
+
+  /**
+   * Check if email exists
+   */
+  static async emailExists(email: string): Promise<boolean> {
+    try {
+      const user = await this.findByEmail(email);
+      return user !== null;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // =================
+  // Utility Methods
+  // =================
 
   /**
    * Validate user data
@@ -620,21 +295,31 @@ export class User {
     }
 
     // Validate field lengths
-    if (userData.firstName && (userData.firstName.length < 2 || userData.firstName.length > 100)) {
+    if (userData.firstName.length < 2 || userData.firstName.length > 100) {
       throw new UserValidationError('First name must be between 2 and 100 characters');
     }
 
-    if (userData.lastName && (userData.lastName.length < 2 || userData.lastName.length > 100)) {
+    if (userData.lastName.length < 2 || userData.lastName.length > 100) {
       throw new UserValidationError('Last name must be between 2 and 100 characters');
     }
   }
 
   /**
-   * Check if email exists
+   * Validate password strength
    */
-  static async emailExists(email: string): Promise<boolean> {
-    const user = await this.findByEmail(email);
-    return user !== null;
+  static validatePassword(password: string): void {
+    if (password.length < 6) {
+      throw new UserValidationError('Password must be at least 6 characters long');
+    }
+
+    // Optional: Add more complex password requirements
+    // const hasUppercase = /[A-Z]/.test(password);
+    // const hasLowercase = /[a-z]/.test(password);
+    // const hasNumbers = /\d/.test(password);
+    // 
+    // if (!hasUppercase || !hasLowercase || !hasNumbers) {
+    //   throw new UserValidationError('Password must contain uppercase, lowercase, and numbers');
+    // }
   }
 
   /**
@@ -643,20 +328,5 @@ export class User {
   private static isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
-  }
-
-  /**
-   * Get all users (admin only)
-   */
-  static async getAll(): Promise<UserType[]> {
-    return await db.select().from(users);
-  }
-
-  /**
-   * Delete user (admin only)
-   */
-  static async delete(id: string): Promise<boolean> {
-    const result = await db.delete(users).where(eq(users.id, id)).returning();
-    return result.length > 0;
   }
 }

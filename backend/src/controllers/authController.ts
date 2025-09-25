@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
-import { UserService } from '../utils/userService';
-import { JWTUtils } from '../utils/auth';
-import { validateUserRegistration, validateUserLogin, sanitizeUser } from '../utils/validation';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { User } from '../models/User';
+
+// JWT secret key (in production this should be in environment variables)
+const JWT_SECRET = process.env.JWT_SECRET || 'sweet-shop-secret-key';
 
 /**
  * Authentication controller
@@ -12,59 +15,79 @@ export class AuthController {
    */
   static async register(req: Request, res: Response): Promise<void> {
     try {
-      const { email, firstName, lastName, password, role } = req.body;
+      const { name, email, password } = req.body;
 
-      // Validate input data
-      const validation = validateUserRegistration({
-        email,
-        firstName,
-        lastName,
-        password,
-        role,
-      });
-
-      if (!validation.isValid) {
+      // Basic validation
+      if (!name || !email || !password) {
         res.status(400).json({
           success: false,
-          error: validation.errors.map(err => err.message).join(', '),
+          message: 'Name, email and password are required'
+        });
+        return;
+      }
+
+      if (password.length < 6) {
+        res.status(400).json({
+          success: false,
+          message: 'Password must be at least 6 characters'
         });
         return;
       }
 
       // Check if user already exists
-      const existingUser = await UserService.userExistsByEmail(email);
+      const existingUser = await User.findByEmail(email);
       if (existingUser) {
-        res.status(409).json({
+        res.status(400).json({
           success: false,
-          error: 'User with this email already exists',
+          message: 'User already exists with this email'
         });
         return;
       }
 
-      // Create new user
-      const newUser = await UserService.createUser({
-        email,
-        firstName,
-        lastName,
-        password,
-        role: role || 'user',
-      });
+      // Hash password
+      const saltRounds = 12;
+      const hashedPassword = await bcrypt.hash(password, saltRounds);
+
+      // Create user (mapping name to firstName/lastName for the User model)
+      const [firstName, ...lastNameParts] = name.trim().split(' ');
+      const lastName = lastNameParts.join(' ') || 'User';
+      
+      const userData = {
+        email: email.toLowerCase().trim(),
+        firstName: firstName,
+        lastName: lastName,
+        role: 'user' as const,
+        password: hashedPassword
+      };
+
+      const user = await User.create(userData);
 
       // Generate JWT token
-      const token = JWTUtils.generateToken(newUser.id, newUser.role);
+      const token = jwt.sign(
+        { userId: user.id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
 
-      // Return success response
       res.status(201).json({
         success: true,
         message: 'User registered successfully',
-        user: sanitizeUser(newUser),
-        token,
+        data: {
+          user: {
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`.trim(),
+            email: user.email,
+            role: user.role
+          },
+          token
+        }
       });
+
     } catch (error) {
       console.error('Registration error:', error);
       res.status(500).json({
         success: false,
-        error: 'Internal server error during registration',
+        message: 'Internal server error during registration'
       });
     }
   }
@@ -76,43 +99,61 @@ export class AuthController {
     try {
       const { email, password } = req.body;
 
-      // Validate input data
-      const validation = validateUserLogin({ email, password });
-
-      if (!validation.isValid) {
+      // Basic validation
+      if (!email || !password) {
         res.status(400).json({
           success: false,
-          error: validation.errors.map(err => err.message).join(', '),
+          message: 'Email and password are required'
         });
         return;
       }
 
-      // Verify user credentials
-      const user = await UserService.verifyPassword(email, password);
-      
+      // Find user by email
+      const user = await User.findByEmail(email.toLowerCase().trim());
       if (!user) {
         res.status(401).json({
           success: false,
-          error: 'Invalid credentials',
+          message: 'Invalid credentials'
+        });
+        return;
+      }
+
+      // Verify password using User model method
+      const isValidPassword = await User.verifyPassword(user.id, password);
+      if (!isValidPassword) {
+        res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
         });
         return;
       }
 
       // Generate JWT token
-      const token = JWTUtils.generateToken(user.id, user.role);
+      const token = jwt.sign(
+        { userId: user.id, email: user.email, role: user.role },
+        JWT_SECRET,
+        { expiresIn: '7d' }
+      );
 
-      // Return success response
-      res.status(200).json({
+      res.json({
         success: true,
         message: 'Login successful',
-        user: sanitizeUser(user),
-        token,
+        data: {
+          user: {
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`.trim(),
+            email: user.email,
+            role: user.role
+          },
+          token
+        }
       });
+
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({
         success: false,
-        error: 'Internal server error during login',
+        message: 'Internal server error during login'
       });
     }
   }
@@ -122,65 +163,47 @@ export class AuthController {
    */
   static async getProfile(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.userId;
-
+      // The user is already attached to req by the auth middleware
+      const userId = (req as any).user.userId;
+      
       if (!userId) {
         res.status(401).json({
           success: false,
-          error: 'User not authenticated',
+          message: 'Authentication required'
         });
         return;
       }
 
-      const user = await UserService.findUserById(userId);
-
+      const user = await User.findById(userId);
       if (!user) {
         res.status(404).json({
           success: false,
-          error: 'User not found',
+          message: 'User not found'
         });
         return;
       }
 
-      res.status(200).json({
+      res.json({
         success: true,
-        user: sanitizeUser(user),
+        data: {
+          user: {
+            id: user.id,
+            name: `${user.firstName} ${user.lastName}`.trim(),
+            email: user.email,
+            role: user.role,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+          }
+        }
       });
+
     } catch (error) {
-      console.error('Get profile error:', error);
+      console.error('Profile error:', error);
       res.status(500).json({
         success: false,
-        error: 'Internal server error',
+        message: 'Internal server error while fetching profile'
       });
     }
   }
 }
 
-/**
- * Admin controller
- */
-export class AdminController {
-  /**
-   * Get admin statistics
-   */
-  static async getStats(req: Request, res: Response): Promise<void> {
-    try {
-      // Demo statistics - In production, these would query the database
-      // Example: SELECT COUNT(*) FROM users, sweets, transactions
-      res.status(200).json({
-        success: true,
-        data: {
-          totalUsers: 0,    // COUNT(*) FROM users
-          totalSweets: 0,   // COUNT(*) FROM sweets  
-          totalOrders: 0,   // COUNT(*) FROM transactions WHERE type='purchase'
-        },
-      });
-    } catch (error) {
-      console.error('Get admin stats error:', error);
-      res.status(500).json({
-        success: false,
-        error: 'Internal server error',
-      });
-    }
-  }
-}

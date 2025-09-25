@@ -558,8 +558,8 @@ describe('API Endpoints - RED Phase (Comprehensive Requirements)', () => {
       
       if (rateLimitedResponses.length > 0) {
         const rateLimitedResponse = rateLimitedResponses[0];
-        expect(rateLimitedResponse.body.success).toBe(false);
-        expect(rateLimitedResponse.body.message).toBe('Too many requests, please try again later');
+        expect(rateLimitedResponse?.body?.success).toBe(false);
+        expect(rateLimitedResponse?.body?.message).toBe('Too many requests, please try again later');
       }
     });
     

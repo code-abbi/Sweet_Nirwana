@@ -25,27 +25,17 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter);
 
-// RED Phase - All routes should fail with "Not implemented"
-app.use('/api/auth', (req, res) => {
-  res.status(500).json({
-    success: false,
-    message: 'Not implemented - RED phase'
-  });
-});
+// Authentication routes
+import authRoutes from './routes/auth';
+app.use('/api/auth', authRoutes);
 
-app.use('/api/sweets', (req, res) => {
-  res.status(500).json({
-    success: false,
-    message: 'Not implemented - RED phase'
-  });
-});
+// Sweet management routes
+import sweetRoutes from './routes/sweets';
+app.use('/api/sweets', sweetRoutes);
 
-app.use('/api/orders', (req, res) => {
-  res.status(500).json({
-    success: false,
-    message: 'Not implemented - RED phase'
-  });
-});
+// Order management routes
+import orderRoutes from './routes/orders';
+app.use('/api/orders', orderRoutes);
 
 // 404 handler
 app.use((req, res) => {
