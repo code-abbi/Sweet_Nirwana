@@ -210,27 +210,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg w-full max-w-4xl h-5/6 mx-4 flex flex-col">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-gray-800/95 backdrop-blur-lg rounded-2xl w-full max-w-4xl h-5/6 mx-4 flex flex-col border border-white/10 shadow-2xl">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <h2 className="text-2xl font-bold text-brand-palace">Admin Panel</h2>
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <h2 className="text-2xl font-bold text-white">🍬 Admin Panel</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100"
+            className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors"
           >
             <XMarkIcon className="w-6 h-6" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b">
+        <div className="flex border-b border-white/10">
           <button
             onClick={() => setActiveTab('stock')}
-            className={`px-6 py-3 text-sm font-medium ${
+            className={`px-6 py-3 text-sm font-medium transition-all ${
               activeTab === 'stock'
-                ? 'text-brand-palace border-b-2 border-brand-palace bg-brand-bg'
-                : 'text-gray-600 hover:text-gray-800'
+                ? 'text-brand-orange border-b-2 border-brand-orange bg-white/5'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
             }`}
           >
             <PencilIcon className="w-4 h-4 inline mr-2" />
@@ -238,10 +238,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           </button>
           <button
             onClick={() => setActiveTab('add')}
-            className={`px-6 py-3 text-sm font-medium ${
+            className={`px-6 py-3 text-sm font-medium transition-all ${
               activeTab === 'add'
-                ? 'text-brand-palace border-b-2 border-brand-palace bg-brand-bg'
-                : 'text-gray-600 hover:text-gray-800'
+                ? 'text-brand-orange border-b-2 border-brand-orange bg-white/5'
+                : 'text-gray-300 hover:text-white hover:bg-white/5'
             }`}
           >
             <PlusIcon className="w-4 h-4 inline mr-2" />
@@ -253,25 +253,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <div className="flex-1 p-6 overflow-auto">
           {activeTab === 'stock' ? (
             <div>
-              <h3 className="text-lg font-semibold mb-4">Manage Sweet Inventory</h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <h3 className="text-lg font-semibold mb-4 text-white">📦 Manage Sweet Inventory</h3>
+              <p className="text-sm text-gray-300 mb-4">
                 Update stock quantities or permanently delete sweets from your inventory.
               </p>
               <div className="space-y-4">
                 {sweets.map(sweet => (
-                  <div key={sweet.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                  <div key={sweet.id} className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl hover:bg-white/10 transition-colors">
                     <div className="flex items-center space-x-4">
                       <img 
                         src={`http://localhost:3001${sweet.imageUrl}`} 
                         alt={sweet.name}
-                        className="w-12 h-12 rounded-lg object-cover"
+                        className="w-12 h-12 rounded-lg object-cover border border-white/20"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = '/images/mithai.jpeg';
                         }}
                       />
                       <div>
-                        <h4 className="font-medium text-brand-palace">{sweet.name}</h4>
-                        <p className="text-sm text-gray-600">Current Stock: {sweet.quantity}</p>
+                        <h4 className="font-medium text-white">{sweet.name}</h4>
+                        <p className="text-sm text-gray-300">Current Stock: {sweet.quantity}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -280,19 +280,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         min="0"
                         value={editingStock[sweet.id] !== undefined ? editingStock[sweet.id] : sweet.quantity}
                         onChange={(e) => handleStockChange(sweet.id, parseInt(e.target.value) || 0)}
-                        className="w-20 px-2 py-1 border border-gray-300 rounded text-center"
+                        className="w-20 px-2 py-1 bg-white/10 border border-white/20 rounded text-center text-white placeholder-gray-400 focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange"
                       />
                       <button
                         onClick={() => handleUpdateStock(sweet.id)}
                         disabled={loading || editingStock[sweet.id] === undefined || editingStock[sweet.id] === sweet.quantity}
-                        className="px-3 py-1 bg-brand-palace text-white rounded text-sm hover:bg-brand-palace/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-3 py-1 bg-gradient-to-r from-brand-orange to-yellow-500 text-white rounded text-sm hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                       >
                         Update
                       </button>
                       <button
                         onClick={() => handleDeleteSweet(sweet.id, sweet.name)}
                         disabled={deletingSweet === sweet.id || loading}
-                        className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        className="px-3 py-1 bg-red-600/80 text-white rounded text-sm hover:bg-red-600 hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center"
                         title="Delete this sweet permanently"
                       >
                         {deletingSweet === sweet.id ? (
@@ -311,27 +311,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             </div>
           ) : (
             <div>
-              <h3 className="text-lg font-semibold mb-4">Add New Sweet</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">🍭 Add New Sweet</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Name *</label>
                   <input
                     type="text"
                     value={newSweet.name}
                     onChange={(e) => handleInputChange('name', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg ${errors.name ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange ${errors.name ? 'border-red-500' : 'border-white/20'}`}
                     placeholder="Enter sweet name"
                   />
-                  {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                  {errors.name && <p className="text-red-400 text-sm mt-1">{errors.name}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Category *</label>
                   <input
                     type="text"
                     value={newSweet.category}
                     onChange={(e) => handleInputChange('category', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg ${errors.category ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange ${errors.category ? 'border-red-500' : 'border-white/20'}`}
                     placeholder={
                       newSweet.sweetType === 'indian' 
                         ? "e.g., Traditional, Bengali, Gujarati, Punjabi, South Indian" 
@@ -339,18 +339,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     }
                   />
                   {!errors.category && (
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-gray-400 mt-1">
                       {newSweet.sweetType === 'indian' 
                         ? "Indian categories: Traditional, Bengali, Gujarati, Punjabi, South Indian, etc."
                         : "Global categories: European, American, Continental, French, Italian, etc."
                       }
                     </p>
                   )}
-                  {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+                  {errors.category && <p className="text-red-400 text-sm mt-1">{errors.category}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Sweet Type *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Sweet Type *</label>
                   <div className="flex space-x-4">
                     <label className="flex items-center">
                       <input
@@ -359,9 +359,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         value="indian"
                         checked={newSweet.sweetType === 'indian'}
                         onChange={(e) => handleInputChange('sweetType', e.target.value)}
-                        className="mr-2 text-brand-palace focus:ring-brand-palace"
+                        className="mr-2 text-brand-orange focus:ring-brand-orange focus:ring-offset-gray-800"
                       />
-                      <span className="text-sm">🇮🇳 Indian Classic</span>
+                      <span className="text-sm text-gray-300">🇮🇳 Indian Classic</span>
                     </label>
                     <label className="flex items-center">
                       <input
@@ -370,60 +370,60 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         value="global"
                         checked={newSweet.sweetType === 'global'}
                         onChange={(e) => handleInputChange('sweetType', e.target.value)}
-                        className="mr-2 text-brand-palace focus:ring-brand-palace"
+                        className="mr-2 text-brand-orange focus:ring-brand-orange focus:ring-offset-gray-800"
                       />
-                      <span className="text-sm">🌎 Global Delight</span>
+                      <span className="text-sm text-gray-300">🌎 Global Delight</span>
                     </label>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-gray-400 mt-1">
                     Choose whether this is a traditional Indian sweet or a global dessert
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Price (₹) *</label>
                   <input
                     type="number"
                     step="0.01"
                     value={newSweet.price}
                     onChange={(e) => handleInputChange('price', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg ${errors.price ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange ${errors.price ? 'border-red-500' : 'border-white/20'}`}
                     placeholder="Enter price per piece"
                   />
-                  {errors.price && <p className="text-red-500 text-sm mt-1">{errors.price}</p>}
+                  {errors.price && <p className="text-red-400 text-sm mt-1">{errors.price}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Initial Quantity *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Initial Quantity *</label>
                   <input
                     type="number"
                     min="0"
                     value={newSweet.quantity}
                     onChange={(e) => handleInputChange('quantity', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg ${errors.quantity ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange ${errors.quantity ? 'border-red-500' : 'border-white/20'}`}
                     placeholder="Enter initial stock quantity"
                   />
-                  {errors.quantity && <p className="text-red-500 text-sm mt-1">{errors.quantity}</p>}
+                  {errors.quantity && <p className="text-red-400 text-sm mt-1">{errors.quantity}</p>}
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Description *</label>
                   <textarea
                     value={newSweet.description}
                     onChange={(e) => handleInputChange('description', e.target.value)}
-                    className={`w-full px-3 py-2 border rounded-lg ${errors.description ? 'border-red-500' : 'border-gray-300'}`}
+                    className={`w-full px-3 py-2 bg-white/10 border rounded-lg text-white placeholder-gray-400 focus:border-brand-orange focus:outline-none focus:ring-1 focus:ring-brand-orange ${errors.description ? 'border-red-500' : 'border-white/20'}`}
                     rows={3}
                     placeholder="Describe the sweet, ingredients, taste, etc."
                   />
-                  {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
+                  {errors.description && <p className="text-red-400 text-sm mt-1">{errors.description}</p>}
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Sweet Image</label>
-                  <p className="text-xs text-gray-500 mb-3">Upload an image from your computer (PNG, JPG, WebP up to 5MB)</p>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">Sweet Image</label>
+                  <p className="text-xs text-gray-400 mb-3">Upload an image from your computer (PNG, JPG, WebP up to 5MB)</p>
 
                   {/* Image Upload Section */}
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-brand-palace transition-colors">
+                  <div className="border-2 border-dashed border-white/20 rounded-lg p-6 text-center hover:border-brand-orange transition-colors bg-white/5 backdrop-blur-sm">
                     <input
                       type="file"
                       accept="image/*"
@@ -436,14 +436,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       htmlFor="image-upload" 
                       className="cursor-pointer flex flex-col items-center space-y-2"
                     >
-                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                      <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center text-2xl">
                         📁
                       </div>
                       <div className="text-sm">
-                        <span className="font-medium text-brand-palace">Click to upload image</span>
-                        <span className="text-gray-600"> or drag and drop</span>
+                        <span className="font-medium text-brand-orange">Click to upload image</span>
+                        <span className="text-gray-300"> or drag and drop</span>
                       </div>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-400">
                         PNG, JPG, WebP up to 5MB
                       </p>
                     </label>
@@ -451,14 +451,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   
                   {uploading && (
                     <div className="mt-2 flex items-center space-x-2">
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-palace"></div>
-                      <span className="text-sm text-gray-600">Uploading...</span>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-orange"></div>
+                      <span className="text-sm text-gray-300">Uploading...</span>
                     </div>
                   )}
 
                   {selectedFile && !uploading && (
-                    <div className="mt-2 p-2 bg-gray-50 rounded border">
-                      <p className="text-sm text-gray-700">Selected: {selectedFile.name}</p>
+                    <div className="mt-2 p-2 bg-white/10 rounded border border-white/20">
+                      <p className="text-sm text-gray-300">Selected: {selectedFile.name}</p>
                     </div>
                   )}
 
@@ -468,12 +468,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <img
                         src={`http://localhost:3001${newSweet.imageUrl}`}
                         alt="Uploaded Preview"
-                        className="w-20 h-20 rounded-lg object-cover border"
+                        className="w-20 h-20 rounded-lg object-cover border border-white/20"
                         onError={(e) => {
                           (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="%23ddd"/><text x="40" y="40" text-anchor="middle" dy=".3em" fill="%23999">Upload Failed</text></svg>';
                         }}
                       />
-                      <p className="text-xs text-gray-500 mt-1">Uploaded Image</p>
+                      <p className="text-xs text-gray-400 mt-1">Uploaded Image</p>
                     </div>
                   )}
                 </div>
@@ -483,9 +483,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 <button
                   onClick={handleAddSweet}
                   disabled={loading}
-                  className="px-6 py-2 bg-brand-palace text-white rounded-lg hover:bg-brand-palace/90 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-6 py-3 bg-gradient-to-r from-brand-orange to-yellow-500 text-white rounded-lg hover:scale-105 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 font-medium"
                 >
-                  {loading ? 'Adding...' : 'Add Sweet'}
+                  {loading ? '✨ Adding Sweet...' : '🍭 Add Sweet to Inventory'}
                 </button>
               </div>
             </div>

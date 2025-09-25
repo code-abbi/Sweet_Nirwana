@@ -12,6 +12,7 @@ import { Testimonials } from '../components/Testimonials';
 import { CartSidebar } from '../components/CartSidebar';
 import { AdminPanel } from '../components/AdminPanel';
 import GoogleAuthModal from '../components/GoogleAuthModal';
+import { Footer } from '../components/Footer';
 
 const API_BASE_URL = 'http://localhost:3001';
 
@@ -377,7 +378,7 @@ const SweetShopPage: React.FC = () => {
         </section>
 
         {/* Featured Sweets Section */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="featured" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FeaturedSweets 
             sweets={sweets} 
             onAddToCart={handleAddToCart}
@@ -391,7 +392,7 @@ const SweetShopPage: React.FC = () => {
         </section>
 
         {/* Testimonials Section */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="testimonials" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Testimonials 
             isSignedIn={isSignedIn}
             onSignIn={() => setShowGoogleOAuth(true)}
@@ -399,7 +400,7 @@ const SweetShopPage: React.FC = () => {
         </section>
 
         {/* Complete Collection Section */}
-        <section id="complete-collection" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <section id="explore" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
               <span className="text-2xl">🍭</span>
@@ -511,6 +512,9 @@ const SweetShopPage: React.FC = () => {
             opacity: 0;
           }
         `}</style>
+
+        {/* Footer */}
+        <Footer />
       </main>
 
       {/* Admin Panel */}
