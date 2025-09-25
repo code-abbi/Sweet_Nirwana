@@ -165,13 +165,14 @@ export class AdminController {
    */
   static async getStats(req: Request, res: Response): Promise<void> {
     try {
-      // TODO: Implement actual statistics
+      // Demo statistics - In production, these would query the database
+      // Example: SELECT COUNT(*) FROM users, sweets, transactions
       res.status(200).json({
         success: true,
         data: {
-          totalUsers: 0,
-          totalSweets: 0,
-          totalOrders: 0,
+          totalUsers: 0,    // COUNT(*) FROM users
+          totalSweets: 0,   // COUNT(*) FROM sweets  
+          totalOrders: 0,   // COUNT(*) FROM transactions WHERE type='purchase'
         },
       });
     } catch (error) {

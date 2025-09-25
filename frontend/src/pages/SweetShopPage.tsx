@@ -1,7 +1,27 @@
-// frontend/src/pages/SweetShopPage.tsx
+/**
+ * Sweet Nirvana - Main Shop Page Component
+ * 
+ * This is the main page of the Sweet Nirvana application that displays:
+ * - Hero section with animated sweet icons
+ * - Featured sweets showcase
+ * - Full catalog of Indian and global sweets
+ * - Shopping cart functionality
+ * - Admin panel for inventory management
+ * - Advanced gradient background with interactive particles
+ * 
+ * Features:
+ * - Sweet filtering (All, Indian, Global)
+ * - Cart management with localStorage persistence
+ * - User authentication with Google OAuth
+ * - Admin functionality for sweet management
+ * - Responsive design with dark theme
+ * - Interactive background animations
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../components/Toast';
 import { Sweet, CartItem } from '../types';
 import { Navigation } from '../components/Navigation';
 import { SweetCard } from '../components/SweetComponents';
@@ -14,21 +34,30 @@ import { AdminPanel } from '../components/AdminPanel';
 import GoogleAuthModal from '../components/GoogleAuthModal';
 import { Footer } from '../components/Footer';
 
+// Backend API endpoint
 const API_BASE_URL = 'http://localhost:3001';
 
+/**
+ * Main Sweet Shop Page Component
+ */
 const SweetShopPage: React.FC = () => {
+  // Authentication and navigation hooks
   const { isSignedIn, user, signIn, signOut } = useAuth();
   const navigate = useNavigate();
+  const { showToast } = useToast();
   
-  const [sweets, setSweets] = useState<Sweet[]>([]);
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [sweetFilter, setSweetFilter] = useState<'all' | 'indian' | 'global'>('all');
+  // Main application state
+  const [sweets, setSweets] = useState<Sweet[]>([]); // All sweets from database
+  const [cart, setCart] = useState<CartItem[]>([]); // Shopping cart items
+  const [loading, setLoading] = useState(true); // Loading state for data fetching
+  const [sweetFilter, setSweetFilter] = useState<'all' | 'indian' | 'global'>('all'); // Filter for sweet categories
   
-  const [isCartOpen, setIsCartOpen] = useState(false);
-  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
-  const [showGoogleOAuth, setShowGoogleOAuth] = useState(false);
+  // UI state management
+  const [isCartOpen, setIsCartOpen] = useState(false); // Cart sidebar visibility
+  const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false); // Admin panel visibility
+  const [showGoogleOAuth, setShowGoogleOAuth] = useState(false); // Google OAuth modal visibility
   
+  // Check if current user has admin privileges
   const isAdmin = isSignedIn && !!user?.isAdmin;
 
   useEffect(() => {
@@ -94,7 +123,7 @@ const SweetShopPage: React.FC = () => {
     const currentCartQty = existingItem ? existingItem.cartQuantity : 0;
 
     if (currentCartQty >= sweetInStock.quantity) {
-      alert('Cannot add more than available stock.');
+      showToast('Cannot add more than available stock.', 'warning');
       return;
     }
 
@@ -119,7 +148,7 @@ const SweetShopPage: React.FC = () => {
     
     const sweetInStock = sweets.find(s => s.id === sweetId);
     if (sweetInStock && newQuantity > sweetInStock.quantity) {
-      alert('Cannot add more than available stock.');
+      showToast('Cannot add more than available stock.', 'warning');
       setCart(prevCart => prevCart.map(item =>
         item.id === sweetId
           ? { ...item, cartQuantity: sweetInStock.quantity }
@@ -220,11 +249,9 @@ const SweetShopPage: React.FC = () => {
       
       // Refresh sweets to show updated stock
       fetchSweets();
-      
-      console.log('Order completed:', orderData);
     } catch (error) {
       console.error('Error updating stock after order:', error);
-      alert('Order was placed but there was an issue updating stock. Please contact support.');
+      showToast('Order was placed but there was an issue updating stock. Please contact support.', 'warning');
     }
   };
 
@@ -237,7 +264,7 @@ const SweetShopPage: React.FC = () => {
     // Filter available sweets (in stock)
     const availableSweets = sweets.filter(sweet => sweet.quantity > 0);
     if (availableSweets.length < 7) {
-      alert('Not enough sweets available for Mixed Box. Please try again later.');
+      showToast('Not enough sweets available for Mixed Box. Please try again later.', 'warning');
       return;
     }
 
@@ -260,9 +287,9 @@ const SweetShopPage: React.FC = () => {
       // Replace current cart with mixed box
       setCart(selectedSweets);
       setIsCartOpen(true);
-      alert(`🎊 Mixed Box created! ${selectedSweets.length} delicious sweets for ₹${totalCost.toFixed(2)}`);
+      showToast(`🎊 Mixed Box created! ${selectedSweets.length} delicious sweets for ₹${totalCost.toFixed(2)}`, 'success');
     } else {
-      alert('Unable to create Mixed Box at this time. Please try again later.');
+      showToast('Unable to create Mixed Box at this time. Please try again later.', 'error');
     }
   };
 
@@ -275,7 +302,7 @@ const SweetShopPage: React.FC = () => {
     // Filter available sweets (in stock)
     const availableSweets = sweets.filter(sweet => sweet.quantity > 0);
     if (availableSweets.length < 3) {
-      alert('Not enough sweets available for Sample Box. Please try again later.');
+      showToast('Not enough sweets available for Sample Box. Please try again later.', 'warning');
       return;
     }
 
@@ -311,9 +338,9 @@ const SweetShopPage: React.FC = () => {
       // Replace current cart with sample box
       setCart(selectedSweets);
       setIsCartOpen(true);
-      alert(`🍬 Sample Box created! ${selectedSweets.length} sweet varieties for ₹${totalCost.toFixed(2)}`);
+      showToast(`🍬 Sample Box created! ${selectedSweets.length} sweet varieties for ₹${totalCost.toFixed(2)}`, 'success');
     } else {
-      alert('Unable to create Sample Box at this time. Please try again later.');
+      showToast('Unable to create Sample Box at this time. Please try again later.', 'error');
     }
   };
 
@@ -336,18 +363,102 @@ const SweetShopPage: React.FC = () => {
   const filteredSweets = getFilteredSweets();
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 min-h-screen relative overflow-x-hidden">
-      {/* Background Decorative Elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-40 left-1/4 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-orange-400/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+    <div className="min-h-screen relative overflow-x-hidden">
+      {/* Advanced Sweet-themed Gradient Background */}
+      <div className="sweet-gradient-background fixed inset-0 z-0 overflow-hidden">
+        {/* Base dark background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900"></div>
+        
+        {/* Large gradient spheres with sweet colors */}
+        <div className="sweet-sphere sphere-1 absolute rounded-full blur-3xl" 
+             style={{
+               width: '40vw',
+               height: '40vw',
+               background: 'linear-gradient(40deg, rgba(255, 159, 64, 0.6), rgba(255, 206, 84, 0.3))',
+               top: '-10%',
+               left: '-10%',
+               animation: 'sweetFloat1 15s ease-in-out infinite alternate'
+             }}>
+        </div>
+        
+        <div className="sweet-sphere sphere-2 absolute rounded-full blur-3xl"
+             style={{
+               width: '45vw', 
+               height: '45vw',
+               background: 'linear-gradient(240deg, rgba(255, 99, 71, 0.7), rgba(255, 140, 0, 0.4))',
+               bottom: '-20%',
+               right: '-10%',
+               animation: 'sweetFloat2 18s ease-in-out infinite alternate'
+             }}>
+        </div>
+        
+        <div className="sweet-sphere sphere-3 absolute rounded-full blur-3xl"
+             style={{
+               width: '30vw',
+               height: '30vw', 
+               background: 'linear-gradient(120deg, rgba(255, 193, 7, 0.5), rgba(255, 235, 59, 0.3))',
+               top: '60%',
+               left: '20%',
+               animation: 'sweetFloat3 20s ease-in-out infinite alternate'
+             }}>
+        </div>
+        
+        <div className="sweet-sphere sphere-4 absolute rounded-full blur-2xl"
+             style={{
+               width: '25vw',
+               height: '25vw',
+               background: 'linear-gradient(200deg, rgba(255, 183, 77, 0.4), rgba(255, 87, 34, 0.2))',
+               top: '10%',
+               right: '30%',
+               animation: 'sweetFloat4 22s ease-in-out infinite alternate'
+             }}>
+        </div>
+        
+        {/* Central glow effect */}
+        <div className="sweet-glow absolute rounded-full blur-3xl"
+             style={{
+               width: '35vw',
+               height: '35vh',
+               background: 'radial-gradient(circle, rgba(255, 206, 84, 0.15), transparent 70%)',
+               top: '50%',
+               left: '50%',
+               transform: 'translate(-50%, -50%)',
+               animation: 'sweetPulse 8s infinite alternate'
+             }}>
+        </div>
+        
+        {/* Sweet-themed grid overlay */}
+        <div className="sweet-grid absolute inset-0"
+             style={{
+               backgroundSize: '40px 40px',
+               backgroundImage: `
+                 linear-gradient(to right, rgba(255, 206, 84, 0.05) 1px, transparent 1px),
+                 linear-gradient(to bottom, rgba(255, 206, 84, 0.05) 1px, transparent 1px)
+               `,
+               zIndex: 2
+             }}>
+        </div>
+        
+        {/* Noise overlay for texture */}
+        <div className="sweet-noise absolute inset-0 opacity-5"
+             style={{
+               backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+               zIndex: 5
+             }}>
+        </div>
+        
+        {/* Floating sweet particles */}
+        <div id="sweet-particles-container" className="absolute inset-0 pointer-events-none" style={{ zIndex: 3 }}>
+          {/* Dynamic particles will be created here */}
+        </div>
+        
+        {/* Main dark overlay for content readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-900/85 via-slate-900/80 to-gray-800/85" style={{ zIndex: 6 }}></div>
       </div>
 
       {/* Main Content */}
       <div className="relative z-10">
-      <Navigation
+        <Navigation
         isSignedIn={isSignedIn}
         isAdmin={isAdmin}
         totalItems={totalItems}
@@ -507,11 +618,249 @@ const SweetShopPage: React.FC = () => {
             }
           }
           
+          @keyframes float {
+            0%, 100% {
+              transform: translateX(0) translateY(0) rotate(0deg);
+            }
+            33% {
+              transform: translateX(10px) translateY(-10px) rotate(1deg);
+            }
+            66% {
+              transform: translateX(-5px) translateY(5px) rotate(-1deg);
+            }
+          }
+          
+          /* Sweet gradient sphere animations */
+          @keyframes sweetFloat1 {
+            0% {
+              transform: translate(0, 0) scale(1);
+              opacity: 0.6;
+            }
+            100% {
+              transform: translate(8%, 12%) scale(1.15);
+              opacity: 0.8;
+            }
+          }
+          
+          @keyframes sweetFloat2 {
+            0% {
+              transform: translate(0, 0) scale(1);
+              opacity: 0.7;
+            }
+            100% {
+              transform: translate(-12%, -8%) scale(1.2);
+              opacity: 0.9;
+            }
+          }
+          
+          @keyframes sweetFloat3 {
+            0% {
+              transform: translate(0, 0) scale(1);
+              opacity: 0.5;
+            }
+            100% {
+              transform: translate(-8%, 15%) scale(1.1);
+              opacity: 0.7;
+            }
+          }
+          
+          @keyframes sweetFloat4 {
+            0% {
+              transform: translate(0, 0) scale(1);
+              opacity: 0.4;
+            }
+            100% {
+              transform: translate(10%, -10%) scale(1.05);
+              opacity: 0.6;
+            }
+          }
+          
+          @keyframes sweetPulse {
+            0% {
+              opacity: 0.15;
+              transform: translate(-50%, -50%) scale(0.9);
+            }
+            100% {
+              opacity: 0.25;
+              transform: translate(-50%, -50%) scale(1.1);
+            }
+          }
+          
+          @keyframes sweetParticleFloat {
+            0% {
+              transform: translateY(100vh) rotate(0deg);
+              opacity: 0;
+            }
+            10% {
+              opacity: 1;
+            }
+            90% {
+              opacity: 1;
+            }
+            100% {
+              transform: translateY(-100vh) rotate(360deg);
+              opacity: 0;
+            }
+          }
+          
+          @keyframes sweetSparkle {
+            0%, 100% {
+              opacity: 0;
+              transform: scale(0);
+            }
+            50% {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+          
           .animate-fade-in-up {
             animation: fade-in-up 0.6s ease-out forwards;
             opacity: 0;
           }
+          
+          .sweet-particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 206, 84, 0.8), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sweetParticleFloat 15s linear infinite;
+          }
+          
+          .sweet-sparkle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 235, 59, 0.9), rgba(255, 193, 7, 0.3));
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sweetSparkle 3s ease-in-out infinite;
+          }
         `}</style>
+        
+        {/* Sweet Particles Interactive Script */}
+        <script dangerouslySetInnerHTML={{__html: `
+          // Sweet-themed particle system
+          document.addEventListener('DOMContentLoaded', function() {
+            const particlesContainer = document.getElementById('sweet-particles-container');
+            if (!particlesContainer) return;
+            
+            const particleCount = 60;
+            
+            // Create floating particles
+            for (let i = 0; i < particleCount; i++) {
+              createSweetParticle();
+            }
+            
+            function createSweetParticle() {
+              const particle = document.createElement('div');
+              particle.className = 'sweet-particle';
+              
+              // Random size (small sweet particles)
+              const size = Math.random() * 4 + 2;
+              particle.style.width = size + 'px';
+              particle.style.height = size + 'px';
+              
+              // Initial position
+              resetParticle(particle);
+              
+              particlesContainer.appendChild(particle);
+              
+              // Animate
+              animateParticle(particle);
+            }
+            
+            function resetParticle(particle) {
+              const posX = Math.random() * 100;
+              const posY = 110; // Start below viewport
+              
+              particle.style.left = posX + '%';
+              particle.style.top = posY + '%';
+              particle.style.opacity = '0';
+              
+              return { x: posX, y: posY };
+            }
+            
+            function animateParticle(particle) {
+              const pos = resetParticle(particle);
+              
+              // Random animation properties
+              const duration = Math.random() * 12 + 8;
+              const delay = Math.random() * 5;
+              
+              setTimeout(() => {
+                particle.style.transition = 'all ' + duration + 's linear';
+                particle.style.opacity = (Math.random() * 0.4 + 0.2).toString();
+                
+                // Move upwards with slight horizontal drift
+                const moveX = pos.x + (Math.random() * 15 - 7.5);
+                const moveY = -10; // Move upwards off screen
+                
+                particle.style.left = moveX + '%';
+                particle.style.top = moveY + '%';
+                
+                // Reset after animation completes
+                setTimeout(() => {
+                  animateParticle(particle);
+                }, duration * 1000);
+              }, delay * 1000);
+            }
+            
+            // Mouse interaction for sweet sparkles
+            let mouseTimeout;
+            document.addEventListener('mousemove', function(e) {
+              clearTimeout(mouseTimeout);
+              
+              // Throttle mouse events
+              mouseTimeout = setTimeout(() => {
+                createMouseSparkle(e);
+                moveGradientSpheres(e);
+              }, 50);
+            });
+            
+            function createMouseSparkle(e) {
+              const mouseX = (e.clientX / window.innerWidth) * 100;
+              const mouseY = (e.clientY / window.innerHeight) * 100;
+              
+              // Create temporary sparkle
+              const sparkle = document.createElement('div');
+              sparkle.className = 'sweet-sparkle';
+              
+              // Small sparkle size
+              const size = Math.random() * 6 + 3;
+              sparkle.style.width = size + 'px';
+              sparkle.style.height = size + 'px';
+              
+              // Position at mouse
+              sparkle.style.left = mouseX + '%';
+              sparkle.style.top = mouseY + '%';
+              
+              particlesContainer.appendChild(sparkle);
+              
+              // Remove after animation
+              setTimeout(() => {
+                sparkle.remove();
+              }, 3000);
+            }
+            
+            function moveGradientSpheres(e) {
+              const moveX = (e.clientX / window.innerWidth - 0.5) * 8;
+              const moveY = (e.clientY / window.innerHeight - 0.5) * 8;
+              
+              const spheres = document.querySelectorAll('.sweet-sphere');
+              spheres.forEach((sphere, index) => {
+                const intensity = (index + 1) * 0.3;
+                const currentTransform = sphere.style.transform || '';
+                const newTransform = 'translate(' + (moveX * intensity) + 'px, ' + (moveY * intensity) + 'px)';
+                
+                sphere.style.transition = 'transform 0.3s ease-out';
+                if (currentTransform.includes('scale')) {
+                  sphere.style.transform = newTransform + ' ' + currentTransform.split('translate')[0];
+                } else {
+                  sphere.style.transform = newTransform;
+                }
+              });
+            }
+          });
+        `}} />
 
         {/* Footer */}
         <Footer />

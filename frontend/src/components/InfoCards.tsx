@@ -99,8 +99,8 @@ export const InfoCards: React.FC<InfoCardsProps> = ({ onMixedBoxClick }) => {
               <span className="text-2xl">💎</span>
               <span className="text-white font-semibold">Excellence in Every Bite</span>
             </div>
-            <h2 className="text-4xl font-bold text-white mb-4">
-              Why Choose Mithai Palace?
+                        <h2 className="text-4xl font-bold text-white mb-4 text-center">
+              Why Choose Sweet Nirvana?
             </h2>
             <p className="text-gray-300 max-w-2xl mx-auto text-lg">
               Discover what makes us the premier destination for authentic Indian sweets

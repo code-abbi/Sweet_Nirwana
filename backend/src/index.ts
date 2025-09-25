@@ -1,3 +1,23 @@
+/**
+ * Sweet Nirvana - Backend API Server
+ * 
+ * This is the main backend server for the Sweet Nirvana application.
+ * It provides REST API endpoints for:
+ * - Sweet product management (CRUD operations)
+ * - User authentication and authorization
+ * - Inventory management
+ * - Static file serving for sweet images
+ * 
+ * Features:
+ * - Express.js server with TypeScript
+ * - PostgreSQL database with Drizzle ORM
+ * - CORS enabled for frontend communication
+ * - Security middleware (Helmet)
+ * - Request logging (Morgan)
+ * - Static file serving
+ * - Environment variable configuration
+ */
+
 // Load environment variables FIRST
 import dotenv from 'dotenv';
 dotenv.config();
@@ -9,11 +29,12 @@ import morgan from 'morgan';
 import path from 'path';
 import { testConnection } from './models/db';
 
-// Import routes
+// Import API routes
 import authRoutes from './routes/auth';
 import sweetsRoutes from './routes/sweets';
 import inventoryRoutes from './routes/inventory';
 
+// Initialize Express application
 const app = express();
 const PORT = process.env.PORT || 5000;
 

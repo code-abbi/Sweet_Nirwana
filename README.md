@@ -1,4 +1,4 @@
-# 🍭 Mithai Shop - Indian Sweet Shop
+# 🍭 Sweet Nirvana - Indian Sweet Shop
 
 A beautiful, full-stack Indian sweet shop e-commerce application with Google OAuth authentication, real-time inventory management, and comprehensive cart functionality.
 

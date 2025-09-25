@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigation } from '../components/Navigation';
 import { CartItem } from '../types';
+import { useToast } from '../components/Toast';
 
 const API_BASE_URL = 'http://localhost:3001';
 
@@ -13,6 +14,7 @@ const getImageUrl = (imageUrl?: string) => {
 };
 
 const CheckoutPage: React.FC = () => {
+  const { showToast } = useToast();
   const { isSignedIn, user, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
@@ -120,12 +122,12 @@ const CheckoutPage: React.FC = () => {
 
   const handlePlaceOrder = () => {
     if (!validateForm()) {
-      alert('Please fill in all required fields correctly.');
+      showToast('Please fill in all required fields correctly.', 'warning');
       return;
     }
     
     // Simulate payment processing
-    alert('Order placed successfully! Thank you for your purchase.');
+    showToast('Order placed successfully! Thank you for your purchase.', 'success');
     
     // Clear cart from localStorage and navigate home
     localStorage.removeItem('sweet_shop_cart');

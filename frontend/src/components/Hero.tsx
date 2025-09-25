@@ -166,8 +166,8 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
               
               {/* Enhanced Title */}
               <div className="relative">
-                <h1 className="text-6xl md:text-8xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-600 via-orange-500 to-red-500 leading-tight">
-                  Mithai Palace
+                              <h1 className="text-6xl md:text-8xl font-bold text-transparent bg-gradient-to-r from-brand-orange via-yellow-400 to-brand-orange bg-clip-text leading-tight">
+                  Sweet Nirvana
                 </h1>
                 <span className="absolute -top-4 -right-4 text-3xl animate-pulse">👑</span>
                 <div className="absolute -bottom-2 left-1/4 right-1/4 h-1 bg-gradient-to-r from-transparent via-orange-400 to-transparent opacity-60"></div>

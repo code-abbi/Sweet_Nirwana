@@ -1,19 +1,48 @@
+/**
+ * Inventory Management Controller
+ * 
+ * Handles all inventory-related operations including:
+ * - Purchase transactions and stock deduction
+ * - Stock restocking for admins
+ * - Transaction history and reporting
+ * - Low stock alerts and monitoring
+ * - Inventory validation and error handling
+ * 
+ * Security: All endpoints require authentication
+ * Admin endpoints additionally require admin role verification
+ */
+
 import { Request, Response } from 'express';
 import { InventoryService } from '../utils/inventoryService';
 import { validatePurchaseRequest, validateRestockRequest, validateTransactionQuery } from '../utils/inventoryValidation';
 
-// Extend Request interface to include user info from auth middleware
+/**
+ * Extended Request interface with authentication data
+ * Populated by the auth middleware before reaching controller methods
+ */
 interface AuthenticatedRequest extends Request {
   userId?: string;
   userRole?: 'admin' | 'user';
 }
-
 /**
- * Inventory controller handling all inventory management endpoints
+ * Inventory Controller Object
+ * Contains all HTTP request handlers for inventory operations
  */
 export const inventoryController = {
   
-  // POST /api/inventory/purchase - Allow users to purchase sweets
+  /**
+   * POST /api/inventory/purchase - Process sweet purchase transactions
+   * 
+   * Handles customer purchases by:
+   * - Validating purchase data (sweetId, quantity, etc.)
+   * - Checking stock availability
+   * - Recording transaction in database
+   * - Updating sweet inventory levels
+   * 
+   * @auth Required - User must be authenticated
+   * @body sweetId, quantity, additional purchase details
+   * @returns Transaction confirmation and updated stock levels
+   */
   purchaseSweet: async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const purchaseData = req.body;

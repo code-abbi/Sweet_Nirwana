@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { XMarkIcon } from '@heroicons/react/24/outline';
 import { CartItem } from '../types';
+import { useToast } from './Toast';
 
 const API_BASE_URL = 'http://localhost:3001';
 
@@ -25,6 +26,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   userEmail = '',
   onOrderComplete,
 }) => {
+  const { showToast } = useToast();
+  
   // Form state
   const [formData, setFormData] = useState({
     fullName: '',
@@ -118,7 +121,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handlePlaceOrder = async () => {
     if (!validateForm()) {
-      alert('Please fill in all required fields correctly.');
+      showToast('Please fill in all required fields correctly.', 'warning');
       return;
     }
     
@@ -165,12 +168,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         cvv: ''
       });
       
-      alert('🎉 Order placed successfully! Thank you for your purchase.');
+      showToast('🎉 Order placed successfully! Thank you for your purchase.', 'success');
       onClose();
       
     } catch (error) {
       console.error('Error processing order:', error);
-      alert('Failed to process order. Please try again.');
+      showToast('Failed to process order. Please try again.', 'error');
     } finally {
       setIsProcessing(false);
     }

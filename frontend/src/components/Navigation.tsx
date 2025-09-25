@@ -1,17 +1,42 @@
-// frontend/src/components/Navigation.tsx
+/**
+ * Navigation Header Component
+ * 
+ * Provides the top navigation bar with:
+ * - Brand logo and company information
+ * - Shopping cart with item count badge
+ * - User authentication controls (sign in/out)
+ * - Admin panel access for authorized users
+ * 
+ * Features:
+ * - Sticky positioning with backdrop blur effect
+ * - Responsive design for mobile and desktop
+ * - Gradient brand styling and animations
+ * - Role-based UI (admin vs regular user)
+ */
+
 import React from 'react';
 import { ShoppingCartIcon, UserCircleIcon, ArrowRightOnRectangleIcon } from '@heroicons/react/24/outline';
 
+/**
+ * Props interface for Navigation component
+ * Contains all the necessary data and event handlers
+ */
 interface NavigationProps {
-  isSignedIn: boolean;
-  isAdmin: boolean;
-  totalItems: number;
-  onCartToggle: () => void;
-  onSignOut: () => void;
-  onSignIn: () => void;
-  onAdminPanel?: () => void;
+  isSignedIn: boolean;      // Current user authentication status
+  isAdmin: boolean;         // Whether current user has admin privileges  
+  totalItems: number;       // Number of items in shopping cart
+  onCartToggle: () => void; // Handler to open/close cart sidebar
+  onSignOut: () => void;    // Handler for user logout
+  onSignIn: () => void;     // Handler to open sign-in modal
+  onAdminPanel?: () => void; // Optional handler for admin panel access
 }
 
+/**
+ * Navigation Component
+ * 
+ * Renders the top navigation bar with responsive design
+ * Adapts UI based on user authentication and admin status
+ */
 export const Navigation: React.FC<NavigationProps> = ({
   isSignedIn,
   isAdmin,
@@ -40,7 +65,7 @@ export const Navigation: React.FC<NavigationProps> = ({
               {/* Brand Text */}
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-palace to-brand-orange bg-clip-text text-transparent">
-                  Mithai Palace
+                  Sweet Nirvana
                 </h1>
                 <p className="text-xs text-brand-palace/70 font-medium">
                   Traditional Indian Sweets Since 1947

@@ -26,7 +26,7 @@ const testimonials: Testimonial[] = [
     name: "Rajesh Kumar",
     location: "Mumbai",
     rating: 5,
-    comment: "Best Kaju Katli I've ever tasted! Ordered a 5kg box for my daughter's wedding and guests couldn't stop praising the quality. Mithai Palace is now our go-to for all celebrations.",
+    comment: "Best Kaju Katli I've ever tasted! Ordered a 5kg box for my daughter's wedding and guests couldn't stop praising the quality. Sweet Nirvana is now our go-to for all celebrations.",
     avatar: "👨‍🏫",
     occasion: "Wedding"
   },
@@ -62,7 +62,7 @@ const testimonials: Testimonial[] = [
     name: "Arjun Reddy",
     location: "Hyderabad",
     rating: 5,
-    comment: "Exceptional quality and authentic flavors! Been ordering from Mithai Palace for 2 years now. They never disappoint. The Malai Roll is absolutely heavenly!",
+    comment: "Exceptional quality and authentic flavors! Been ordering from Sweet Nirvana for 2 years now. They never disappoint. The Malai Roll is absolutely heavenly!",
     avatar: "👨‍🔬",
     occasion: "Regular Customer"
   }
@@ -264,7 +264,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
                 Join thousands of satisfied customers!
               </div>
               <div className="text-gray-300 text-sm">
-                Experience the Mithai Palace difference today
+                Experience the Sweet Nirvana difference today
               </div>
             </div>
             <button 

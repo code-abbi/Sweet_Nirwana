@@ -18,10 +18,6 @@ export const Footer: React.FC = () => {
               Crafting authentic Indian sweets and global delights with love and tradition. 
               Every bite tells a story of heritage, quality, and sweetness.
             </p>
-            <div className="flex items-center space-x-2 text-gray-300">
-              <HeartIcon className="w-4 h-4 text-red-400" />
-              <span className="text-sm">Made with love since 2020</span>
-            </div>
           </div>
 
           {/* Quick Links */}
@@ -31,7 +27,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a href="#featured" className="text-gray-300 hover:text-brand-orange transition-colors text-sm">
                   Featured Sweets
-                </a>
+                </a> 
               </li>
               <li>
                 <a href="#explore" className="text-gray-300 hover:text-brand-orange transition-colors text-sm">
@@ -131,9 +127,6 @@ export const Footer: React.FC = () => {
                 © {currentYear} Sweet Nirvana. All rights reserved.
               </p>
               <div className="flex items-center space-x-1 text-gray-400">
-                <span className="text-sm">Built with</span>
-                <HeartIcon className="w-3 h-3 text-red-400" />
-                <span className="text-sm">by developers who love sweets</span>
               </div>
             </div>
             
@@ -147,18 +140,6 @@ export const Footer: React.FC = () => {
               <button className="text-gray-400 hover:text-white text-sm transition-colors">
                 Cookie Policy
               </button>
-            </div>
-          </div>
-          
-          {/* Tech Stack Credits */}
-          <div className="mt-4 pt-4 border-t border-white/5">
-            <div className="flex flex-wrap items-center justify-center space-x-4 text-xs text-gray-500">
-              <span>⚛️ React</span>
-              <span>🎨 Tailwind CSS</span>
-              <span>📱 TypeScript</span>
-              <span>🗄️ PostgreSQL</span>
-              <span>🚀 Node.js</span>
-              <span>🎯 Express.js</span>
             </div>
           </div>
         </div>

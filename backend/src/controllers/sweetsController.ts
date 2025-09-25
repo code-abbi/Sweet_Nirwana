@@ -1,7 +1,23 @@
+/**
+ * Sweet Products Controller
+ * 
+ * Handles all HTTP requests related to sweet products including:
+ * - CRUD operations (Create, Read, Update, Delete)
+ * - Search and filtering functionality
+ * - Stock management
+ * - Image upload and management
+ * 
+ * All endpoints return standardized JSON responses with success/error status
+ */
+
 import { Request, Response } from 'express';
 import { SweetService } from '../utils/sweetService';
 import { validateSweet } from '../utils/validation';
 
+/**
+ * Extended Request interface with user authentication data
+ * Used for endpoints that require authentication
+ */
 interface AuthenticatedRequest extends Request {
   user?: {
     id: string;
@@ -10,8 +26,21 @@ interface AuthenticatedRequest extends Request {
   };
 }
 
+/**
+ * Sweet Products Controller Object
+ * Contains all the HTTP request handlers for sweet-related operations
+ */
 export const sweetsController = {
-  // GET /api/sweets - List all sweets (no pagination limit)
+  /**
+   * GET /api/sweets - Retrieve all sweet products
+   * 
+   * Supports query parameters for filtering and sorting:
+   * - search: Filter by name/description
+   * - category: Filter by sweet category
+   * - minPrice/maxPrice: Price range filtering
+   * - sortBy: Field to sort by (default: name)
+   * - sortOrder: Sort direction (asc/desc, default: asc)
+   */
   getAllSweets: async (req: Request, res: Response): Promise<void> => {
     try {
       const {
@@ -47,7 +76,12 @@ export const sweetsController = {
     }
   },
 
-  // GET /api/sweets/:id - Get single sweet by ID
+  /**
+   * GET /api/sweets/:id - Retrieve a specific sweet by its ID
+   * 
+   * @param id - Sweet product ID from URL parameters
+   * @returns Sweet product data or 404 if not found
+   */
   getSweetById: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
@@ -77,7 +111,15 @@ export const sweetsController = {
     }
   },
 
-  // POST /api/sweets - Create new sweet (demo mode)
+  /**
+   * POST /api/sweets - Create a new sweet product
+   * 
+   * Validates input data and creates a new sweet in the database
+   * Prevents duplicate names and ensures data integrity
+   * 
+   * @body name, description, price, category, imageUrl, quantity
+   * @returns Created sweet data with success message
+   */
   createSweet: async (req: Request, res: Response): Promise<void> => {
     try {
       const sweetData = req.body;
@@ -119,7 +161,16 @@ export const sweetsController = {
     }
   },
 
-  // PUT /api/sweets/:id - Update sweet (demo mode)
+  /**
+   * PUT /api/sweets/:id - Update an existing sweet product
+   * 
+   * Allows partial updates of sweet properties
+   * Validates data and prevents name conflicts
+   * 
+   * @param id - Sweet ID from URL parameters
+   * @body Any sweet properties to update
+   * @returns Updated sweet data
+   */
   updateSweet: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
@@ -168,7 +219,15 @@ export const sweetsController = {
     }
   },
 
-  // DELETE /api/sweets/:id - Delete sweet (demo mode)
+  /**
+   * DELETE /api/sweets/:id - Remove a sweet product
+   * 
+   * Permanently deletes a sweet from the database
+   * Used for admin management functionality
+   * 
+   * @param id - Sweet ID from URL parameters
+   * @returns Success confirmation or 404 if not found
+   */
   deleteSweet: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
@@ -198,7 +257,16 @@ export const sweetsController = {
     }
   },
 
-  // PUT /api/sweets/:id/stock - Update sweet stock (public for cart management)
+  /**
+   * PUT /api/sweets/:id/stock - Update stock quantity for a sweet
+   * 
+   * Public endpoint used by the shopping cart system to manage inventory
+   * Ensures stock levels are maintained during purchase flow
+   * 
+   * @param id - Sweet ID from URL parameters  
+   * @body quantity - New stock quantity (must be >= 0)
+   * @returns Updated sweet with new stock level
+   */
   updateStock: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
@@ -241,7 +309,15 @@ export const sweetsController = {
     }
   },
 
-  // GET /api/sweets/search - Search sweets with filters
+  /**
+   * GET /api/sweets/search - Advanced search with filters and pagination
+   * 
+   * Supports multiple search criteria and paginated results
+   * Used for frontend search functionality and filtering
+   * 
+   * @query name, category, minPrice, maxPrice, page, limit
+   * @returns Filtered and paginated sweet results
+   */
   searchSweets: async (req: Request, res: Response): Promise<void> => {
     try {
       const {
@@ -318,51 +394,7 @@ export const sweetsController = {
     }
   },
 
-  // POST /api/sweets/copy-image - Copy image from Downloads to sweet-images directory
-  copyImageFromDownloads: async (req: Request, res: Response): Promise<void> => {
-    try {
-      const { filename, sourcePath } = req.body;
 
-      if (!filename || !sourcePath) {
-        res.status(400).json({
-          success: false,
-          message: 'Filename and source path are required'
-        });
-        return;
-      }
-
-      const fs = require('fs');
-      const path = require('path');
-
-      // Construct the destination path
-      const destinationPath = path.join(__dirname, '../../sweet-images', filename);
-      
-      // Check if source file exists
-      if (!fs.existsSync(sourcePath)) {
-        res.status(404).json({
-          success: false,
-          message: `File not found: ${filename}. Please check if the file exists in your Downloads folder.`
-        });
-        return;
-      }
-
-      // Copy the file
-      fs.copyFileSync(sourcePath, destinationPath);
-
-      res.status(200).json({
-        success: true,
-        message: `Image "${filename}" copied successfully!`,
-        imagePath: `/images/${filename}`
-      });
-
-    } catch (error) {
-      console.error('Error copying image:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to copy image. Please try again.'
-      });
-    }
-  },
 
   // POST /api/sweets/upload-image - Upload image file directly
   uploadImage: async (req: Request, res: Response): Promise<void> => {
@@ -433,52 +465,12 @@ export const sweetsController = {
     }
   },
 
-  // PUT /api/sweets/bulk-update-images - Update images for newly added global desserts
-  bulkUpdateImages: async (req: Request, res: Response): Promise<void> => {
-    try {
-      // Map dessert names to their respective image files
-      const imageUpdates = {
-        'Tiramisu': '/images/Tiramisu.jpeg',
-        'Baklava': '/images/baklava.jpeg',
-        'Crème Brûlée': '/images/Crème Brûlée.jpeg',
-        'New York Cheesecake': '/images/Cheesecake.jpeg',
-        'Mochi': '/images/Mochi.jpeg',
-        'Churros': '/images/Churros.jpeg',
-        'French Macarons': '/images/French Macarons.jpeg',
-        'Pavlova': '/images/Pavlova.jpeg',
-        'Artisan Gelato': '/images/artisan_Gelato.jpeg',
-        'Tres Leches Cake': '/images/Tres_Leches Cake.jpeg'
-      };
-
-      const updatedSweets = [];
-      
-      for (const [name, imageUrl] of Object.entries(imageUpdates)) {
-        try {
-          const updatedSweet = await SweetService.updateSweetByName(name, { imageUrl });
-          if (updatedSweet) {
-            updatedSweets.push({ name, imageUrl, success: true });
-          } else {
-            updatedSweets.push({ name, imageUrl, success: false, error: 'Sweet not found' });
-          }
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-          updatedSweets.push({ name, imageUrl, success: false, error: errorMessage });
-        }
-      }
-
-      res.status(200).json({
-        success: true,
-        message: 'Bulk image update completed',
-        results: updatedSweets,
-        totalUpdated: updatedSweets.filter(r => r.success).length
-      });
-
-    } catch (error) {
-      console.error('Error in bulk image update:', error);
-      res.status(500).json({
-        success: false,
-        message: 'Failed to update images. Please try again.'
-      });
-    }
-  }
+  /**
+   * POST /api/sweets/upload-image - Handle image file upload
+   * 
+   * Accepts multipart/form-data with 'image' field
+   * Validates file type (images only) and size (max 5MB)
+   * Generates unique filename to prevent conflicts
+   * Returns the image path for use in sweet creation/updates
+   */
 };

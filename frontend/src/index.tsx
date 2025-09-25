@@ -1,22 +1,23 @@
+/**
+ * Sweet Nirvana - Application Entry Point
+ * 
+ * This file bootstraps the React application and mounts it to the DOM.
+ * It provides the authentication context at the root level.
+ */
+
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { AuthProvider } from './contexts/AuthContext';
 
+// Get the root DOM element where React will mount
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+// Render the application with React StrictMode for development checks
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <App />
-    </AuthProvider>
+    <App />
   </React.StrictMode>
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();

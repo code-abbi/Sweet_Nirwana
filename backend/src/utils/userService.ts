@@ -119,9 +119,10 @@ export class UserService {
       return null;
     }
 
-    // TODO: In real implementation, compare with stored hash
+    // DEMO MODE: In production, implement secure password comparison:
     // const isValid = await PasswordUtils.comparePassword(password, storedHash);
-    // For testing purposes, we'll accept any user that exists
+    // if (!isValid) { throw new Error('Invalid credentials'); }
+    // For demo purposes, any existing user can sign in
     
     return user;
   }

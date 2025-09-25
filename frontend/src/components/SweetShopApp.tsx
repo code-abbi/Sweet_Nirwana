@@ -9,6 +9,7 @@ import {
 import { useAuth } from '../contexts/AuthContext';
 import { Sweet } from '../types';
 import GoogleAuthModal from './GoogleAuthModal';
+import { useToast } from './Toast';
 
 const ADMIN_EMAIL = 'wildrabit001@gmail.com';
 const API_BASE_URL = 'http://localhost:3001';
@@ -32,6 +33,7 @@ interface SweetWithQuantity extends Sweet {
 }
 
 const SweetShopApp: React.FC = () => {
+  const { showToast } = useToast();
   const { isSignedIn, user, signIn, signOut } = useAuth();
   const [sweets, setSweets] = useState<SweetWithQuantity[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -212,13 +214,13 @@ const SweetShopApp: React.FC = () => {
     }
     
     if (sweet.quantity === 0) {
-      alert('This item is out of stock');
+      showToast('This item is out of stock', 'warning');
       return;
     }
 
     const currentInCart = getCartQuantity(sweet.id);
     if (currentInCart >= sweet.quantity) {
-      alert('Cannot add more than available stock');
+      showToast('Cannot add more than available stock', 'warning');
       return;
     }
 
@@ -255,7 +257,7 @@ const SweetShopApp: React.FC = () => {
       }
       removeFromCart(sweetId);
     } else if (newQuantity > totalAvailable) {
-      alert('Cannot add more than available stock');
+      showToast('Cannot add more than available stock', 'warning');
     } else {
       // Calculate stock change: if increasing cart quantity, decrease stock
       const stockChange = change > 0 ? -change : -change; // -change because we're adding/removing from stock
@@ -388,12 +390,12 @@ const SweetShopApp: React.FC = () => {
 
   const handlePayment = () => {
     if (!validateForm()) {
-      alert('Please fill in all required fields correctly.');
+      showToast('Please fill in all required fields correctly.', 'warning');
       return;
     }
     
     // Process payment - items are now sold, so we don't return them to stock
-    alert('Payment successful! Thank you for your purchase.');
+    showToast('Payment successful! Thank you for your purchase.', 'success');
     
     // Clear cart completely from both state and localStorage
     setCart([]);

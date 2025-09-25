@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Sweet } from '../types';
+import React, { useState, useRef } from 'react';
+import { Sweet, NewSweetFormData } from '../types';
+import { useToast } from './Toast';
 import { PencilIcon, PlusIcon, XMarkIcon, TrashIcon } from '@heroicons/react/24/outline';
 
 interface AdminPanelProps {
@@ -29,6 +30,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onDeleteSweet,
   onClose
 }) => {
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<'stock' | 'add'>('stock');
   const [editingStock, setEditingStock] = useState<{[key: string]: number}>({});
   const [newSweet, setNewSweet] = useState<NewSweetData>({
@@ -69,7 +71,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           return newState;
         });
       } else {
-        alert('Failed to update stock. Please try again.');
+        showToast('Failed to update stock. Please try again.', 'error');
       }
     }
   };
@@ -125,9 +127,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       setImageSelectionMode('upload'); // Reset to upload mode
       setSelectedFile(null); // Reset selected file
       setErrors({});
-      alert('Sweet added successfully!');
+      showToast('Sweet added successfully!', 'success');
     } else {
-      alert('Failed to add sweet. Please try again.');
+      showToast('Failed to add sweet. Please try again.', 'error');
     }
   };
 
@@ -154,9 +156,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     setDeletingSweet(null);
     
     if (success) {
-      alert(`${sweetName} has been deleted successfully.`);
+      showToast(`${sweetName} has been deleted successfully.`, 'success');
     } else {
-      alert('Failed to delete sweet. Please try again.');
+      showToast('Failed to delete sweet. Please try again.', 'error');
     }
   };
 
@@ -176,14 +178,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         const result = await response.json();
         setNewSweet(prev => ({ ...prev, imageUrl: result.imagePath }));
         setSelectedFile(null);
-        alert(`Image "${file.name}" uploaded successfully!`);
+        showToast(`Image "${file.name}" uploaded successfully!`, 'success');
       } else {
         const error = await response.json();
-        alert(`Failed to upload image: ${error.message}`);
+        showToast(`Failed to upload image: ${error.message}`, 'error');
       }
     } catch (error) {
       console.error('Error uploading image:', error);
-      alert('Failed to upload image. Please try again.');
+      showToast('Failed to upload image. Please try again.', 'error');
     } finally {
       setUploading(false);
     }
@@ -194,13 +196,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file (JPG, PNG, WebP, etc.)');
+        showToast('Please select an image file (JPG, PNG, WebP, etc.)', 'warning');
         return;
       }
       
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        showToast('File size must be less than 5MB', 'warning');
         return;
       }
 
