@@ -69,4 +69,11 @@ router.post('/copy-image', sweetsController.copyImageFromDownloads);
  */
 router.post('/upload-image', sweetsController.uploadImage);
 
+/**
+ * @route   PUT /api/sweets/bulk-update-images
+ * @desc    Update images for newly added global desserts
+ * @access  Public (for demo)
+ */
+router.put('/bulk-update-images', sweetsController.bulkUpdateImages);
+
 export default router;

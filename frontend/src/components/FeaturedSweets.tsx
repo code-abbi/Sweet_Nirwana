@@ -12,19 +12,30 @@ const getImageUrl = (imageUrl?: string) => {
 // Helper function to get variable ratings for different sweets
 const getRating = (sweetName: string) => {
   const ratings: { [key: string]: { stars: string; score: string } } = {
-    // Popular sweets get higher ratings (4.7-4.9)
+    // Popular sweets get higher ratings (4.7-4.9) - Mix of traditional and global favorites
     'Kaju Katli': { stars: '⭐⭐⭐⭐⭐', score: '4.9' },
     'Gulab Jamun': { stars: '⭐⭐⭐⭐⭐', score: '4.8' },
     'Rasgulla': { stars: '⭐⭐⭐⭐⭐', score: '4.7' },
     'Rasmalai': { stars: '⭐⭐⭐⭐⭐', score: '4.8' },
-    // Other sweets get good ratings (4.0-4.6)
+    'Tiramisu': { stars: '⭐⭐⭐⭐⭐', score: '4.9' },
+    'New York Cheesecake': { stars: '⭐⭐⭐⭐⭐', score: '4.8' },
+    // Other traditional sweets get good ratings (4.0-4.6)
     'Barfi': { stars: '⭐⭐⭐⭐☆', score: '4.4' },
     'Jalebi': { stars: '⭐⭐⭐⭐☆', score: '4.2' },
     'Ladoo': { stars: '⭐⭐⭐⭐☆', score: '4.0' },
     'Halwa': { stars: '⭐⭐⭐⭐☆', score: '4.3' },
     'Sandesh': { stars: '⭐⭐⭐⭐☆', score: '4.5' },
     'Malai Roll': { stars: '⭐⭐⭐⭐☆', score: '4.6' },
-    'Kheer': { stars: '⭐⭐⭐⭐☆', score: '4.1' }
+    'Kheer': { stars: '⭐⭐⭐⭐☆', score: '4.1' },
+    // Global desserts ratings (4.0-4.7)
+    'Baklava': { stars: '⭐⭐⭐⭐⭐', score: '4.7' },
+    'Crème Brûlée': { stars: '⭐⭐⭐⭐☆', score: '4.6' },
+    'Mochi': { stars: '⭐⭐⭐⭐☆', score: '4.5' },
+    'Churros': { stars: '⭐⭐⭐⭐☆', score: '4.3' },
+    'French Macarons': { stars: '⭐⭐⭐⭐⭐', score: '4.7' },
+    'Pavlova': { stars: '⭐⭐⭐⭐☆', score: '4.4' },
+    'Artisan Gelato': { stars: '⭐⭐⭐⭐☆', score: '4.5' },
+    'Tres Leches Cake': { stars: '⭐⭐⭐⭐☆', score: '4.6' }
   };
   return ratings[sweetName] || { stars: '⭐⭐⭐⭐☆', score: '4.0' };
 };
@@ -178,7 +189,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
                           </div>
                           
                           {/* Popular Badge - Only for selected sweets */}
-                          {(['Kaju Katli', 'Gulab Jamun', 'Rasgulla', 'Rasmalai'].includes(sweet.name)) && (
+                          {(['Kaju Katli', 'Gulab Jamun', 'Rasgulla', 'Rasmalai', 'Tiramisu', 'New York Cheesecake'].includes(sweet.name)) && (
                             <div className="absolute top-4 left-4">
                               <span className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full animate-pulse-glow">
                                 🔥 Popular

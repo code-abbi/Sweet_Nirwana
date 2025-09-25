@@ -139,6 +139,29 @@ export class SweetService {
   }
 
   /**
+   * Update sweet by name
+   */
+  static async updateSweetByName(name: string, updateData: any): Promise<Sweet | null> {
+    const updatePayload: any = {
+      ...updateData,
+      updatedAt: new Date(),
+    };
+
+    // Convert price to string for decimal field
+    if (updateData.price !== undefined) {
+      updatePayload.price = updateData.price.toString();
+    }
+
+    const result = await db
+      .update(sweets)
+      .set(updatePayload)
+      .where(eq(sweets.name, name))
+      .returning();
+
+    return result[0] || null;
+  }
+
+  /**
    * Delete sweet by ID
    */
   static async deleteSweet(id: string): Promise<boolean> {

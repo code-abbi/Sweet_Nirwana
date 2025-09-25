@@ -431,5 +431,54 @@ export const sweetsController = {
         message: 'Failed to upload image. Please try again.'
       });
     }
+  },
+
+  // PUT /api/sweets/bulk-update-images - Update images for newly added global desserts
+  bulkUpdateImages: async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Map dessert names to their respective image files
+      const imageUpdates = {
+        'Tiramisu': '/images/Tiramisu.jpeg',
+        'Baklava': '/images/baklava.jpeg',
+        'Crème Brûlée': '/images/Crème Brûlée.jpeg',
+        'New York Cheesecake': '/images/Cheesecake.jpeg',
+        'Mochi': '/images/Mochi.jpeg',
+        'Churros': '/images/Churros.jpeg',
+        'French Macarons': '/images/French Macarons.jpeg',
+        'Pavlova': '/images/Pavlova.jpeg',
+        'Artisan Gelato': '/images/artisan_Gelato.jpeg',
+        'Tres Leches Cake': '/images/Tres_Leches Cake.jpeg'
+      };
+
+      const updatedSweets = [];
+      
+      for (const [name, imageUrl] of Object.entries(imageUpdates)) {
+        try {
+          const updatedSweet = await SweetService.updateSweetByName(name, { imageUrl });
+          if (updatedSweet) {
+            updatedSweets.push({ name, imageUrl, success: true });
+          } else {
+            updatedSweets.push({ name, imageUrl, success: false, error: 'Sweet not found' });
+          }
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+          updatedSweets.push({ name, imageUrl, success: false, error: errorMessage });
+        }
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Bulk image update completed',
+        results: updatedSweets,
+        totalUpdated: updatedSweets.filter(r => r.success).length
+      });
+
+    } catch (error) {
+      console.error('Error in bulk image update:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update images. Please try again.'
+      });
+    }
   }
 };

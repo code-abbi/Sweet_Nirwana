@@ -17,8 +17,8 @@ interface SweetCardProps {
 export const SweetCard: React.FC<SweetCardProps> = ({ sweet, onAddToCart }) => {
   const isOutOfStock = sweet.quantity === 0;
   
-  // Only show Popular badge for specific sweets (~25% of sweets)
-  const popularSweets = ['Kaju Katli', 'Gulab Jamun', 'Rasgulla', 'Rasmalai'];
+  // Only show Popular badge for specific sweets (~25% of sweets) - Mix of traditional and global favorites
+  const popularSweets = ['Kaju Katli', 'Gulab Jamun', 'Rasgulla', 'Rasmalai', 'Tiramisu', 'New York Cheesecake'];
   const isPopular = popularSweets.includes(sweet.name);
 
   // Variable ratings for different sweets
@@ -29,14 +29,25 @@ export const SweetCard: React.FC<SweetCardProps> = ({ sweet, onAddToCart }) => {
       'Gulab Jamun': { stars: '⭐⭐⭐⭐⭐', score: '4.8' },
       'Rasgulla': { stars: '⭐⭐⭐⭐⭐', score: '4.7' },
       'Rasmalai': { stars: '⭐⭐⭐⭐⭐', score: '4.8' },
-      // Other sweets get good ratings (4.0-4.6)
+      'Tiramisu': { stars: '⭐⭐⭐⭐⭐', score: '4.9' },
+      'New York Cheesecake': { stars: '⭐⭐⭐⭐⭐', score: '4.8' },
+      // Other traditional sweets get good ratings (4.0-4.6)
       'Barfi': { stars: '⭐⭐⭐⭐☆', score: '4.4' },
       'Jalebi': { stars: '⭐⭐⭐⭐☆', score: '4.2' },
       'Ladoo': { stars: '⭐⭐⭐⭐☆', score: '4.0' },
       'Halwa': { stars: '⭐⭐⭐⭐☆', score: '4.3' },
       'Sandesh': { stars: '⭐⭐⭐⭐☆', score: '4.5' },
       'Malai Roll': { stars: '⭐⭐⭐⭐☆', score: '4.6' },
-      'Kheer': { stars: '⭐⭐⭐⭐☆', score: '4.1' }
+      'Kheer': { stars: '⭐⭐⭐⭐☆', score: '4.1' },
+      // Global desserts ratings (4.0-4.7)
+      'Baklava': { stars: '⭐⭐⭐⭐⭐', score: '4.7' },
+      'Crème Brûlée': { stars: '⭐⭐⭐⭐☆', score: '4.6' },
+      'Mochi': { stars: '⭐⭐⭐⭐☆', score: '4.5' },
+      'Churros': { stars: '⭐⭐⭐⭐☆', score: '4.3' },
+      'French Macarons': { stars: '⭐⭐⭐⭐⭐', score: '4.7' },
+      'Pavlova': { stars: '⭐⭐⭐⭐☆', score: '4.4' },
+      'Artisan Gelato': { stars: '⭐⭐⭐⭐☆', score: '4.5' },
+      'Tres Leches Cake': { stars: '⭐⭐⭐⭐☆', score: '4.6' }
     };
     return ratings[sweetName] || { stars: '⭐⭐⭐⭐☆', score: '4.0' };
   };
