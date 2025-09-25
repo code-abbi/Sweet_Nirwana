@@ -6,6 +6,9 @@ import { Sweet, CartItem } from '../types';
 import { Navigation } from '../components/Navigation';
 import { SweetCard } from '../components/SweetComponents';
 import { Hero } from '../components/Hero';
+import { FeaturedSweets } from '../components/FeaturedSweets';
+import { InfoCards } from '../components/InfoCards';
+import { Testimonials } from '../components/Testimonials';
 import { CartSidebar } from '../components/CartSidebar';
 import { AdminPanel } from '../components/AdminPanel';
 import GoogleOAuthPage from '../components/GoogleOAuthPage';
@@ -223,6 +226,95 @@ const SweetShopPage: React.FC = () => {
     }
   };
 
+  const createMixedBox = () => {
+    if (!isSignedIn) {
+      setShowGoogleOAuth(true);
+      return;
+    }
+
+    // Filter available sweets (in stock)
+    const availableSweets = sweets.filter(sweet => sweet.quantity > 0);
+    if (availableSweets.length < 7) {
+      alert('Not enough sweets available for Mixed Box. Please try again later.');
+      return;
+    }
+
+    // Shuffle and select random sweets
+    const shuffled = [...availableSweets].sort(() => Math.random() - 0.5);
+    const selectedSweets: CartItem[] = [];
+    let totalCost = 0;
+    const maxCost = 1200;
+
+    for (const sweet of shuffled) {
+      const price = parseFloat(sweet.price);
+      if (totalCost + price <= maxCost && selectedSweets.length < 10) {
+        selectedSweets.push({ ...sweet, cartQuantity: 1 });
+        totalCost += price;
+        if (selectedSweets.length >= 7 && totalCost >= 800) break; // Ensure at least 7 items and reasonable total
+      }
+    }
+
+    if (selectedSweets.length >= 7) {
+      // Replace current cart with mixed box
+      setCart(selectedSweets);
+      setIsCartOpen(true);
+      alert(`🎊 Mixed Box created! ${selectedSweets.length} delicious sweets for ₹${totalCost.toFixed(2)}`);
+    } else {
+      alert('Unable to create Mixed Box at this time. Please try again later.');
+    }
+  };
+
+  const createSampleBox = () => {
+    if (!isSignedIn) {
+      setShowGoogleOAuth(true);
+      return;
+    }
+
+    // Filter available sweets (in stock)
+    const availableSweets = sweets.filter(sweet => sweet.quantity > 0);
+    if (availableSweets.length < 3) {
+      alert('Not enough sweets available for Sample Box. Please try again later.');
+      return;
+    }
+
+    // Randomize selection for different combinations each time
+    const shuffledSweets = [...availableSweets].sort(() => Math.random() - 0.5);
+    const selectedSweets: CartItem[] = [];
+    let totalCost = 0;
+    const maxCost = 550; // Increased price limit to ₹550
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loops
+
+    // Use random selection approach for variety
+    while (selectedSweets.length < Math.min(6, availableSweets.length) && attempts < maxAttempts) {
+      attempts++;
+      const randomSweet = shuffledSweets[Math.floor(Math.random() * shuffledSweets.length)];
+      const price = parseFloat(randomSweet.price);
+      
+      // Check if this sweet is already selected and if adding it would exceed budget
+      const alreadySelected = selectedSweets.find(s => s.id === randomSweet.id);
+      if (!alreadySelected && totalCost + price <= maxCost) {
+        selectedSweets.push({ ...randomSweet, cartQuantity: 1 });
+        totalCost += price;
+        
+        // Stop if we have good variety and reasonable cost
+        if (selectedSweets.length >= 3 && totalCost >= 250) {
+          // Randomly decide if we should add more or stop here
+          if (Math.random() > 0.4) break;
+        }
+      }
+    }
+
+    if (selectedSweets.length >= 3) {
+      // Replace current cart with sample box
+      setCart(selectedSweets);
+      setIsCartOpen(true);
+      alert(`🍬 Sample Box created! ${selectedSweets.length} sweet varieties for ₹${totalCost.toFixed(2)}`);
+    } else {
+      alert('Unable to create Sample Box at this time. Please try again later.');
+    }
+  };
+
   const totalItems = cart.reduce((sum, item) => sum + item.cartQuantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.cartQuantity, 0);
 
@@ -239,7 +331,17 @@ const SweetShopPage: React.FC = () => {
   }
 
   return (
-    <div className="bg-brand-bg min-h-screen">
+    <div className="bg-gradient-to-br from-brand-bg via-yellow-50/30 to-orange-50/30 min-h-screen relative overflow-x-hidden">
+      {/* Background Decorative Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-200/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-orange-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-40 left-1/4 w-40 h-40 bg-red-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-pink-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-10">
       <Navigation
         isSignedIn={isSignedIn}
         isAdmin={isAdmin}
@@ -261,29 +363,116 @@ const SweetShopPage: React.FC = () => {
         onOrderComplete={handleOrderComplete}
       />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Hero />
+      <main className="min-h-screen">
+        {/* Hero Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Hero 
+            isSignedIn={isSignedIn} 
+            onSignIn={() => setShowGoogleOAuth(true)} 
+          />
+        </section>
 
-        <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-brand-palace">Complete Collection</h2>
-          <p className="mt-2 text-brand-palace/70">
-            Explore our complete range of authentic Indian sweets
-          </p>
-        </div>
+        {/* Featured Sweets Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <FeaturedSweets 
+            sweets={sweets} 
+            onAddToCart={handleAddToCart}
+            onMixedBoxClick={createMixedBox}
+          />
+        </section>
 
-        {loading ? (
-          <p>Loading sweets...</p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {sweets.map(sweet => (
-              <SweetCard
-                key={sweet.id}
-                sweet={sweet}
-                onAddToCart={() => handleAddToCart(sweet)}
-              />
-            ))}
+        {/* Info Cards Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <InfoCards onMixedBoxClick={createMixedBox} />
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Testimonials 
+            isSignedIn={isSignedIn}
+            onSignIn={() => setShowGoogleOAuth(true)}
+          />
+        </section>
+
+        {/* Complete Collection Section */}
+        <section id="complete-collection" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-teal-100 rounded-full px-6 py-2 mb-6">
+              <span className="text-2xl">🍭</span>
+              <span className="text-brand-palace font-semibold">Complete Collection</span>
+            </div>
+            <h2 className="text-4xl font-bold text-brand-palace mb-4">
+              Explore All Our Sweets
+            </h2>
+            <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
+              From traditional classics to modern innovations, discover our complete range of authentic Indian sweets
+            </p>
           </div>
-        )}
+
+          {loading ? (
+            <div className="flex items-center justify-center py-20">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-16 w-16 border-4 border-brand-orange border-t-transparent mx-auto mb-4"></div>
+                <p className="text-brand-palace/70 text-lg">Loading delicious sweets...</p>
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {sweets.map((sweet, index) => (
+                <div
+                  key={sweet.id}
+                  className="animate-fade-in-up"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <SweetCard
+                    sweet={sweet}
+                    onAddToCart={() => handleAddToCart(sweet)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Bottom CTA Section */}
+          {sweets.length > 0 && (
+            <div className="text-center mt-16">
+              <div className="bg-gradient-to-r from-brand-orange/10 to-yellow-400/10 rounded-3xl p-8 border-2 border-brand-orange/20">
+                <h3 className="text-2xl font-bold text-brand-palace mb-4">
+                  Can't decide? Try our Sweet Sampler Box! 🎁
+                </h3>
+                <p className="text-brand-palace/70 mb-6 max-w-2xl mx-auto">
+                  Get a taste of our delicious sweets with our randomly curated sampler box. 
+                  Different selection every time - Perfect for discovery or as a gift!
+                </p>
+                <button 
+                  onClick={createSampleBox}
+                  className="bg-gradient-to-r from-brand-orange to-yellow-500 hover:from-yellow-500 hover:to-brand-orange text-white font-bold px-8 py-4 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
+                >
+                  Order Sampler Box - Up to ₹550 🍬
+                </button>
+              </div>
+            </div>
+          )}
+        </section>
+
+        {/* Add custom animations */}
+        <style>{`
+          @keyframes fade-in-up {
+            0% {
+              opacity: 0;
+              transform: translateY(30px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          
+          .animate-fade-in-up {
+            animation: fade-in-up 0.6s ease-out forwards;
+            opacity: 0;
+          }
+        `}</style>
       </main>
 
       {/* Admin Panel */}
@@ -296,6 +485,7 @@ const SweetShopPage: React.FC = () => {
           onClose={() => setIsAdminPanelOpen(false)}
         />
       )}
+      </div>
     </div>
   );
 };
