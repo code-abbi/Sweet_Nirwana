@@ -22,6 +22,7 @@ const SweetShopPage: React.FC = () => {
   const [sweets, setSweets] = useState<Sweet[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sweetFilter, setSweetFilter] = useState<'all' | 'indian' | 'global'>('all');
   
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAdminPanelOpen, setIsAdminPanelOpen] = useState(false);
@@ -318,7 +319,20 @@ const SweetShopPage: React.FC = () => {
   const totalItems = cart.reduce((sum, item) => sum + item.cartQuantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.cartQuantity, 0);
 
+  // Categorize sweets based on actual database categories
+  const indianCategories = ['Bengali', 'Milk-based', 'Syrup-based', 'Flour-based', 'Dry Fruits', 'Fried', 'Milk-Rice based'];
+  const globalCategories = ['European', 'Middle Eastern', 'French', 'American', 'Japanese', 'Spanish', 'Australian', 'Italian', 'Latin American'];
 
+  const getFilteredSweets = () => {
+    if (sweetFilter === 'indian') {
+      return sweets.filter(sweet => indianCategories.includes(sweet.category));
+    } else if (sweetFilter === 'global') {
+      return sweets.filter(sweet => globalCategories.includes(sweet.category));
+    }
+    return sweets; // 'all' case
+  };
+
+  const filteredSweets = getFilteredSweets();
 
   return (
     <div className="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 min-h-screen relative overflow-x-hidden">
@@ -394,9 +408,43 @@ const SweetShopPage: React.FC = () => {
             <h2 className="text-4xl font-bold text-white mb-4">
               Explore All Our Sweets
             </h2>
-            <p className="text-gray-300 max-w-2xl mx-auto text-lg">
+            <p className="text-gray-300 max-w-2xl mx-auto text-lg mb-8">
               From traditional classics to global innovations, discover our complete range of authentic desserts
             </p>
+            
+            {/* Filter Buttons */}
+            <div className="flex justify-center gap-4 mb-8">
+              <button
+                onClick={() => setSweetFilter('all')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                  sweetFilter === 'all'
+                    ? 'bg-gradient-to-r from-brand-orange to-yellow-500 text-white shadow-lg scale-105'
+                    : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20 hover:scale-105'
+                }`}
+              >
+                🌍 All Sweets ({sweets.length})
+              </button>
+              <button
+                onClick={() => setSweetFilter('indian')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                  sweetFilter === 'indian'
+                    ? 'bg-gradient-to-r from-brand-orange to-yellow-500 text-white shadow-lg scale-105'
+                    : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20 hover:scale-105'
+                }`}
+              >
+                🇮🇳 Indian Classics ({sweets.filter(s => indianCategories.includes(s.category)).length})
+              </button>
+              <button
+                onClick={() => setSweetFilter('global')}
+                className={`px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                  sweetFilter === 'global'
+                    ? 'bg-gradient-to-r from-brand-orange to-yellow-500 text-white shadow-lg scale-105'
+                    : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20 hover:scale-105'
+                }`}
+              >
+                🌎 Global Delights ({sweets.filter(s => globalCategories.includes(s.category)).length})
+              </button>
+            </div>
           </div>
 
           {loading ? (

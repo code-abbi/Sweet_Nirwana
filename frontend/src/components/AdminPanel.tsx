@@ -17,6 +17,7 @@ interface NewSweetData {
   quantity: string;
   description: string;
   imageUrl?: string;
+  sweetType: 'indian' | 'global';
 }
 
 
@@ -36,7 +37,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     price: '',
     quantity: '',
     description: '',
-    imageUrl: ''
+    imageUrl: '',
+    sweetType: 'indian'
   });
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [loading, setLoading] = useState(false);
@@ -117,7 +119,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         price: '',
         quantity: '',
         description: '',
-        imageUrl: ''
+        imageUrl: '',
+        sweetType: 'indian'
       });
       setImageSelectionMode('upload'); // Reset to upload mode
       setSelectedFile(null); // Reset selected file
@@ -129,7 +132,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   };
 
   const handleInputChange = (field: keyof NewSweetData, value: string) => {
-    setNewSweet(prev => ({ ...prev, [field]: value }));
+    setNewSweet(prev => ({ 
+      ...prev, 
+      [field]: field === 'sweetType' ? (value as 'indian' | 'global') : value 
+    }));
     
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -326,9 +332,52 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     value={newSweet.category}
                     onChange={(e) => handleInputChange('category', e.target.value)}
                     className={`w-full px-3 py-2 border rounded-lg ${errors.category ? 'border-red-500' : 'border-gray-300'}`}
-                    placeholder="e.g., Milk-based, Syrup-based"
+                    placeholder={
+                      newSweet.sweetType === 'indian' 
+                        ? "e.g., Traditional, Bengali, Gujarati, Punjabi, South Indian" 
+                        : "e.g., European, American, Continental, French, Italian"
+                    }
                   />
+                  {!errors.category && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {newSweet.sweetType === 'indian' 
+                        ? "Indian categories: Traditional, Bengali, Gujarati, Punjabi, South Indian, etc."
+                        : "Global categories: European, American, Continental, French, Italian, etc."
+                      }
+                    </p>
+                  )}
                   {errors.category && <p className="text-red-500 text-sm mt-1">{errors.category}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Sweet Type *</label>
+                  <div className="flex space-x-4">
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="sweetType"
+                        value="indian"
+                        checked={newSweet.sweetType === 'indian'}
+                        onChange={(e) => handleInputChange('sweetType', e.target.value)}
+                        className="mr-2 text-brand-palace focus:ring-brand-palace"
+                      />
+                      <span className="text-sm">🇮🇳 Indian Classic</span>
+                    </label>
+                    <label className="flex items-center">
+                      <input
+                        type="radio"
+                        name="sweetType"
+                        value="global"
+                        checked={newSweet.sweetType === 'global'}
+                        onChange={(e) => handleInputChange('sweetType', e.target.value)}
+                        className="mr-2 text-brand-palace focus:ring-brand-palace"
+                      />
+                      <span className="text-sm">🌎 Global Delight</span>
+                    </label>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    Choose whether this is a traditional Indian sweet or a global dessert
+                  </p>
                 </div>
 
                 <div>
