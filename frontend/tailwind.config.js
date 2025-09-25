@@ -1,39 +1,33 @@
+// frontend/tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: [
-    "./src/**/*.{js,jsx,ts,tsx}",
-    "./public/index.html"
-  ],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './public/index.html'],
   theme: {
     extend: {
       colors: {
-        primary: {
-          50: '#fef7ee',
-          100: '#fdebd2',
-          200: '#fad4a5',
-          300: '#f7b566',
-          400: '#f48d2a',
-          500: '#f2700f',
-          600: '#e35405',
-          700: '#bc3e08',
-          800: '#95310f',
-          900: '#782910',
-          950: '#411206',
+        'brand-palace': {
+          DEFAULT: '#8B4513', // A brown color for text
+          light: '#D2B48C', // Tan
+          extralight: '#F5DEB3', // Wheat
         },
-        sweet: {
-          pink: '#ff69b4',
-          purple: '#9370db',
-          yellow: '#ffd700',
-          red: '#ff1493',
-          blue: '#00bfff',
-        }
+        'brand-gold': {
+          DEFAULT: '#FFD700', // Gold
+          dark: '#DAA520', // GoldenRod
+        },
+        'brand-orange': {
+          DEFAULT: '#F97316',
+          light: '#FB923C',
+        },
+        'brand-bg': {
+          DEFAULT: '#FBF9F6',
+          light: '#FFFFFF',
+        },
       },
       fontFamily: {
         display: ['Poppins', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
-      }
+      },
     },
   },
   plugins: [],
-}
-
+};

@@ -95,8 +95,8 @@ export const sweetsController = {
     }
   },
 
-  // POST /api/sweets - Create new sweet (admin only)
-  createSweet: async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  // POST /api/sweets - Create new sweet (demo mode)
+  createSweet: async (req: Request, res: Response): Promise<void> => {
     try {
       const sweetData = req.body;
       
@@ -137,8 +137,8 @@ export const sweetsController = {
     }
   },
 
-  // PUT /api/sweets/:id - Update sweet (admin only)
-  updateSweet: async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  // PUT /api/sweets/:id - Update sweet (demo mode)
+  updateSweet: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       const sweetData = req.body;
@@ -186,8 +186,8 @@ export const sweetsController = {
     }
   },
 
-  // DELETE /api/sweets/:id - Delete sweet (admin only)
-  deleteSweet: async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  // DELETE /api/sweets/:id - Delete sweet (demo mode)
+  deleteSweet: async (req: Request, res: Response): Promise<void> => {
     try {
       const { id } = req.params;
       
@@ -333,6 +333,121 @@ export const sweetsController = {
     } catch (error) {
       console.error('Error searching sweets:', error);
       res.status(500).json({ error: 'Internal server error' });
+    }
+  },
+
+  // POST /api/sweets/copy-image - Copy image from Downloads to sweet-images directory
+  copyImageFromDownloads: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { filename, sourcePath } = req.body;
+
+      if (!filename || !sourcePath) {
+        res.status(400).json({
+          success: false,
+          message: 'Filename and source path are required'
+        });
+        return;
+      }
+
+      const fs = require('fs');
+      const path = require('path');
+
+      // Construct the destination path
+      const destinationPath = path.join(__dirname, '../../sweet-images', filename);
+      
+      // Check if source file exists
+      if (!fs.existsSync(sourcePath)) {
+        res.status(404).json({
+          success: false,
+          message: `File not found: ${filename}. Please check if the file exists in your Downloads folder.`
+        });
+        return;
+      }
+
+      // Copy the file
+      fs.copyFileSync(sourcePath, destinationPath);
+
+      res.status(200).json({
+        success: true,
+        message: `Image "${filename}" copied successfully!`,
+        imagePath: `/images/${filename}`
+      });
+
+    } catch (error) {
+      console.error('Error copying image:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to copy image. Please try again.'
+      });
+    }
+  },
+
+  // POST /api/sweets/upload-image - Upload image file directly
+  uploadImage: async (req: Request, res: Response): Promise<void> => {
+    try {
+      const multer = require('multer');
+      const path = require('path');
+
+      // Configure multer for image upload
+      const storage = multer.diskStorage({
+        destination: (req: any, file: any, cb: any) => {
+          cb(null, path.join(__dirname, '../../sweet-images'));
+        },
+        filename: (req: any, file: any, cb: any) => {
+          // Generate unique filename with timestamp
+          const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+          const ext = path.extname(file.originalname);
+          const name = path.basename(file.originalname, ext);
+          cb(null, `${name}-${uniqueSuffix}${ext}`);
+        }
+      });
+
+      const upload = multer({
+        storage,
+        limits: {
+          fileSize: 5 * 1024 * 1024, // 5MB limit
+        },
+        fileFilter: (req: any, file: any, cb: any) => {
+          // Check if file is an image
+          if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+          } else {
+            cb(new Error('Only image files are allowed'), false);
+          }
+        }
+      }).single('image');
+
+      upload(req, res, (err: any) => {
+        if (err) {
+          res.status(400).json({
+            success: false,
+            message: err.message || 'File upload failed'
+          });
+          return;
+        }
+
+        if (!req.file) {
+          res.status(400).json({
+            success: false,
+            message: 'No image file provided'
+          });
+          return;
+        }
+
+        res.status(200).json({
+          success: true,
+          message: 'Image uploaded successfully!',
+          imagePath: `/images/${req.file.filename}`,
+          filename: req.file.filename
+        });
+      });
+
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to upload image. Please try again.'
+      });
     }
   }
 };

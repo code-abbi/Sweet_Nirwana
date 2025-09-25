@@ -29,10 +29,10 @@ router.get('/:id', sweetsController.getSweetById);
 
 /**
  * @route   POST /api/sweets
- * @desc    Create new sweet (admin only)
- * @access  Private (Admin)
+ * @desc    Create new sweet (demo mode - no auth required)
+ * @access  Public (for demo)
  */
-router.post('/', authenticateToken, requireAdmin, sweetsController.createSweet);
+router.post('/', sweetsController.createSweet);
 
 /**
  * @route   PUT /api/sweets/:id/stock
@@ -43,16 +43,30 @@ router.put('/:id/stock', sweetsController.updateStock);
 
 /**
  * @route   PUT /api/sweets/:id
- * @desc    Update sweet (admin only)
- * @access  Private (Admin)
+ * @desc    Update sweet (demo mode)
+ * @access  Public (for demo)
  */
-router.put('/:id', authenticateToken, requireAdmin, sweetsController.updateSweet);
+router.put('/:id', sweetsController.updateSweet);
 
 /**
  * @route   DELETE /api/sweets/:id
- * @desc    Delete sweet (admin only)
- * @access  Private (Admin)
+ * @desc    Delete sweet (demo mode)
+ * @access  Public (for demo)
  */
-router.delete('/:id', authenticateToken, requireAdmin, sweetsController.deleteSweet);
+router.delete('/:id', sweetsController.deleteSweet);
+
+/**
+ * @route   POST /api/sweets/copy-image
+ * @desc    Copy image from Downloads to sweet-images directory
+ * @access  Public (for demo)
+ */
+router.post('/copy-image', sweetsController.copyImageFromDownloads);
+
+/**
+ * @route   POST /api/sweets/upload-image
+ * @desc    Upload image file directly to sweet-images directory
+ * @access  Public (for demo)
+ */
+router.post('/upload-image', sweetsController.uploadImage);
 
 export default router;
