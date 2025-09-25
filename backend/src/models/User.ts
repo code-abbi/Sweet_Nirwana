@@ -1,24 +1,26 @@
 /**
- * TDD RED PHASE: User Model - Initial Implementation (Should Fail)
+ * TDD GREEN PHASE: User Model - Minimal Implementation (Make Tests Pass)
  * 
- * This is the initial User model implementation that should fail all tests
- * in the RED phase of Test-Driven Development (TDD).
+ * This is the GREEN phase User model implementation that provides minimal
+ * functionality to make all RED phase tests pass.
  * 
- * RED PHASE CHARACTERISTICS:
- * - Methods throw "not implemented yet" errors
- * - No actual functionality implemented
- * - All tests should fail with clear error messages
+ * GREEN PHASE CHARACTERISTICS:
+ * - Implement minimal functionality to pass tests
+ * - Focus on making tests pass, not on optimization
+ * - Simple, straightforward implementations
+ * - Basic validation and error handling
  * 
  * This follows the TDD methodology:
- * 1. RED: Write failing tests and failing implementation (current phase)
- * 2. GREEN: Implement minimal code to make tests pass
- * 3. REFACTOR: Improve code quality while keeping tests green
+ * 1. RED: Write failing tests and failing implementation (completed)
+ * 2. GREEN: Implement minimal code to make tests pass (current phase)
+ * 3. REFACTOR: Improve code quality while keeping tests green (next phase)
  */
 
 import { db } from '../config/database';
 import { users } from './schema';
 import { eq } from 'drizzle-orm';
 import type { User as UserType, NewUser } from './schema';
+import bcrypt from 'bcrypt';
 
 /**
  * Custom Error Classes for User Operations
@@ -44,113 +46,242 @@ export class UserAuthenticationError extends Error {
   }
 }
 
+// In-memory storage for passwords (GREEN phase simplification)
+const userPasswords = new Map<string, string>();
+
 /**
  * User Model Class
- * RED PHASE: All methods should fail with "not implemented yet" errors
+ * GREEN PHASE: Minimal implementation to make tests pass
  */
 export class User {
   /**
    * Create a new user
    */
   static async create(userData: NewUser & { password?: string }): Promise<UserType> {
-    throw new Error('User.create method not implemented yet');
+    // Validate required fields
+    this.validateUserData(userData);
+    
+    // Check for duplicate email
+    const existingUser = await this.findByEmail(userData.email);
+    if (existingUser) {
+      throw new UserValidationError('Email already exists');
+    }
+    
+    // Sanitize input
+    const sanitizedData = this.sanitizeUserInput(userData);
+    
+    // Prepare user data
+    const newUser: NewUser = {
+      email: sanitizedData.email!,
+      firstName: sanitizedData.firstName!,
+      lastName: sanitizedData.lastName!,
+      role: sanitizedData.role || 'user',
+      clerkId: sanitizedData.clerkId || null,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    // Insert into database
+    const [user] = await db.insert(users).values(newUser).returning();
+    if (!user) {
+      throw new Error('Failed to create user');
+    }
+
+    // Store password if provided (simplified for GREEN phase)
+    if (userData.password) {
+      const hashedPassword = await this.hashPassword(userData.password);
+      userPasswords.set(user.id, hashedPassword);
+    }
+
+    return user;
   }
 
   /**
    * Find user by ID
    */
   static async findById(id: string): Promise<UserType | null> {
-    throw new Error('User.findById method not implemented yet');
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+
+    return result[0] || null;
   }
 
   /**
    * Find user by email
    */
   static async findByEmail(email: string): Promise<UserType | null> {
-    throw new Error('User.findByEmail method not implemented yet');
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.email, email.toLowerCase()))
+      .limit(1);
+
+    return result[0] || null;
   }
 
   /**
    * Find user by Clerk ID
    */
   static async findByClerkId(clerkId: string): Promise<UserType | null> {
-    throw new Error('User.findByClerkId method not implemented yet');
+    const result = await db
+      .select()
+      .from(users)
+      .where(eq(users.clerkId, clerkId))
+      .limit(1);
+
+    return result[0] || null;
   }
 
   /**
    * Update user information
    */
   static async update(id: string, updateData: Partial<NewUser>): Promise<UserType | null> {
-    throw new Error('User.update method not implemented yet');
+    const sanitizedData = this.sanitizeUserInput(updateData);
+    
+    const result = await db
+      .update(users)
+      .set({
+        ...sanitizedData,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+
+    return result[0] || null;
   }
 
   /**
    * Authenticate user with email and password
    */
   static async authenticate(email: string, password: string): Promise<UserType | null> {
-    throw new Error('User.authenticate method not implemented yet');
+    const user = await this.findByEmail(email);
+    if (!user) {
+      return null;
+    }
+
+    const isValidPassword = await this.verifyPassword(user.id, password);
+    if (!isValidPassword) {
+      return null;
+    }
+
+    return user;
   }
 
   /**
    * Verify password for a user
    */
   static async verifyPassword(userId: string, password: string): Promise<boolean> {
-    throw new Error('User.verifyPassword method not implemented yet');
+    const storedHash = userPasswords.get(userId);
+    if (!storedHash) {
+      return false;
+    }
+
+    return await this.comparePassword(password, storedHash);
   }
 
   /**
    * Check if user is admin
    */
   static async isAdmin(userId: string): Promise<boolean> {
-    throw new Error('User.isAdmin method not implemented yet');
+    const user = await this.findById(userId);
+    return user?.role === 'admin';
   }
 
   /**
    * Hash password (utility method)
    */
   static async hashPassword(password: string): Promise<string> {
-    throw new Error('User.hashPassword method not implemented yet');
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
   }
 
   /**
    * Compare password with hash (utility method)
    */
   static async comparePassword(password: string, hash: string): Promise<boolean> {
-    throw new Error('User.comparePassword method not implemented yet');
+    return await bcrypt.compare(password, hash);
   }
 
   /**
    * Validate user data
    */
   static validateUserData(userData: Partial<NewUser>): void {
-    throw new Error('User.validateUserData method not implemented yet');
+    if (!userData.email) {
+      throw new UserValidationError('Email is required');
+    }
+
+    if (!this.isValidEmail(userData.email)) {
+      throw new UserValidationError('Invalid email format');
+    }
+
+    if (!userData.firstName) {
+      throw new UserValidationError('First name is required');
+    }
+
+    if (!userData.lastName) {
+      throw new UserValidationError('Last name is required');
+    }
+
+    // Validate field lengths
+    if (userData.firstName && (userData.firstName.length < 2 || userData.firstName.length > 100)) {
+      throw new UserValidationError('First name must be between 2 and 100 characters');
+    }
+
+    if (userData.lastName && (userData.lastName.length < 2 || userData.lastName.length > 100)) {
+      throw new UserValidationError('Last name must be between 2 and 100 characters');
+    }
   }
 
   /**
    * Sanitize user input
    */
   static sanitizeUserInput(userData: Partial<NewUser>): Partial<NewUser> {
-    throw new Error('User.sanitizeUserInput method not implemented yet');
+    const sanitized: Partial<NewUser> = { ...userData };
+    
+    if (userData.email) {
+      sanitized.email = userData.email.toLowerCase().trim();
+    }
+    if (userData.firstName) {
+      sanitized.firstName = userData.firstName.trim();
+    }
+    if (userData.lastName) {
+      sanitized.lastName = userData.lastName.trim();
+    }
+    
+    return sanitized;
   }
 
   /**
    * Check if email exists
    */
   static async emailExists(email: string): Promise<boolean> {
-    throw new Error('User.emailExists method not implemented yet');
+    const user = await this.findByEmail(email);
+    return user !== null;
+  }
+
+  /**
+   * Validate email format
+   */
+  private static isValidEmail(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   /**
    * Get all users (admin only)
    */
   static async getAll(): Promise<UserType[]> {
-    throw new Error('User.getAll method not implemented yet');
+    return await db.select().from(users);
   }
 
   /**
    * Delete user (admin only)
    */
   static async delete(id: string): Promise<boolean> {
-    throw new Error('User.delete method not implemented yet');
+    const result = await db.delete(users).where(eq(users.id, id)).returning();
+    return result.length > 0;
   }
 }
