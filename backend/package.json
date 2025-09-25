@@ -27,7 +27,9 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
+    "@types/bcrypt": "^6.0.0",
     "@types/multer": "^2.0.0",
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
