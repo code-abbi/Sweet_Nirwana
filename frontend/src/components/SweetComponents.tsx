@@ -53,7 +53,7 @@ export const SweetCard: React.FC<SweetCardProps> = ({ sweet, onAddToCart }) => {
   };
 
   return (
-    <div className="bg-brand-bg-light rounded-2xl shadow-md overflow-hidden group">
+    <div className="bg-white/5 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden group border border-white/10 hover:border-white/20 transition-all duration-300">
       <div className="relative">
         <img
           src={getImageUrl(sweet.imageUrl)}
@@ -62,36 +62,36 @@ export const SweetCard: React.FC<SweetCardProps> = ({ sweet, onAddToCart }) => {
         />
         <div className="absolute top-3 left-3 flex flex-col gap-2">
             {isPopular && (
-              <span className="text-xs font-bold bg-white/80 backdrop-blur-sm text-brand-palace px-2 py-1 rounded-full">
+              <span className="text-xs font-bold bg-gradient-to-r from-red-500 to-pink-500 text-white px-2 py-1 rounded-full shadow-lg animate-pulse">
                 ⭐ Popular
               </span>
             )}
-            <span className="text-xs font-bold bg-white/80 backdrop-blur-sm text-brand-palace px-2 py-1 rounded-full">
+            <span className="text-xs font-bold bg-white/10 backdrop-blur-sm text-white px-2 py-1 rounded-full border border-white/20">
               {sweet.category}
             </span>
         </div>
       </div>
       <div className="p-5">
-        <h3 className="text-lg font-bold text-brand-palace">{sweet.name}</h3>
-        <p className="text-sm text-brand-palace/70 mt-1 mb-2 line-clamp-2">{sweet.description}</p>
+        <h3 className="text-lg font-bold text-white group-hover:text-brand-orange transition-colors duration-300">{sweet.name}</h3>
+        <p className="text-sm text-gray-300 mt-1 mb-2 line-clamp-2">{sweet.description}</p>
         {/* Rating */}
         <div className="flex items-center gap-1 mb-3">
           <span className="text-yellow-400 text-sm">{getRating(sweet.name).stars}</span>
-          <span className="text-xs text-brand-palace/60">({getRating(sweet.name).score})</span>
+          <span className="text-xs text-gray-400">({getRating(sweet.name).score})</span>
         </div>
 
         <div className="flex justify-between items-center mt-4">
           <div>
-            <p className="text-xl font-bold text-brand-palace">₹{sweet.price}</p>
-            <p className="text-xs text-brand-palace/60">Stock: {sweet.quantity}</p>
+            <p className="text-xl font-bold text-brand-orange">₹{sweet.price}</p>
+            <p className="text-xs text-gray-400">Stock: {sweet.quantity}</p>
           </div>
           <button
             onClick={onAddToCart}
             disabled={isOutOfStock}
-            className={`px-4 py-2 rounded-lg font-semibold text-sm transition-colors ${
+            className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all duration-300 ${
               isOutOfStock
-                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-brand-gold text-brand-palace hover:bg-brand-gold-dark shadow-sm'
+                ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-brand-orange to-yellow-500 hover:from-yellow-500 hover:to-brand-orange text-white shadow-lg hover:shadow-xl transform hover:scale-105'
             }`}
           >
             {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}

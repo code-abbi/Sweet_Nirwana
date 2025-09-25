@@ -139,14 +139,14 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
       <section className="mb-16">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-100 to-pink-100 rounded-full px-6 py-2 mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-4 border border-white/20">
             <span className="text-2xl">💝</span>
-            <span className="text-brand-palace font-semibold">Customer Love</span>
+            <span className="text-white font-semibold">Customer Love</span>
           </div>
-          <h2 className="text-4xl font-bold text-brand-palace mb-4">
+          <h2 className="text-4xl font-bold text-white mb-4">
             What Our Customers Say
           </h2>
-          <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-300 max-w-2xl mx-auto text-lg">
             Don't just take our word for it - hear from our delighted customers across India
           </p>
         </div>
@@ -154,14 +154,14 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
         {/* Main Testimonial Display */}
         <div className="relative max-w-4xl mx-auto">
           <div 
-            className="bg-gradient-to-br from-white via-yellow-50 to-orange-50 rounded-3xl p-8 md:p-12 shadow-2xl animate-float-testimonial"
+            className="bg-white/5 backdrop-blur-md rounded-3xl p-8 md:p-12 shadow-2xl animate-float-testimonial border border-white/10"
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
           >
             {/* Navigation Buttons */}
             <button
               onClick={prevTestimonial}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white text-brand-palace p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10 border border-white/20"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -169,7 +169,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
             </button>
             <button
               onClick={nextTestimonial}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-sm hover:bg-white text-brand-palace p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10"
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 z-10 border border-white/20"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -179,7 +179,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
             {/* Testimonial Content */}
             <div key={currentTestimonial} className="text-center animate-slide-in-testimonial">
               {/* Quote Icon */}
-              <div className="text-6xl text-brand-orange/30 mb-6">❝</div>
+              <div className="text-6xl text-brand-orange/50 mb-6">❝</div>
               
               {/* Rating Stars */}
               <div className="flex justify-center mb-6">
@@ -195,7 +195,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
               </div>
 
               {/* Testimonial Text */}
-              <blockquote className="text-xl md:text-2xl text-brand-palace/80 font-medium leading-relaxed mb-8 max-w-3xl mx-auto">
+              <blockquote className="text-xl md:text-2xl text-gray-200 font-medium leading-relaxed mb-8 max-w-3xl mx-auto">
                 "{testimonials[currentTestimonial].comment}"
               </blockquote>
 
@@ -203,14 +203,14 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
               <div className="flex items-center justify-center gap-6">
                 <div className="text-6xl">{testimonials[currentTestimonial].avatar}</div>
                 <div className="text-left">
-                  <div className="text-xl font-bold text-brand-palace">
+                  <div className="text-xl font-bold text-white">
                     {testimonials[currentTestimonial].name}
                   </div>
-                  <div className="text-brand-palace/70 mb-1">
+                  <div className="text-gray-300 mb-1">
                     📍 {testimonials[currentTestimonial].location}
                   </div>
                   {testimonials[currentTestimonial].occasion && (
-                    <div className="bg-gradient-to-r from-brand-orange/20 to-yellow-400/20 rounded-full px-3 py-1 text-sm font-medium text-brand-orange">
+                    <div className="bg-gradient-to-r from-brand-orange/30 to-yellow-400/30 rounded-full px-3 py-1 text-sm font-medium text-brand-orange border border-brand-orange/20">
                       🎉 {testimonials[currentTestimonial].occasion}
                     </div>
                   )}
@@ -228,7 +228,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   currentTestimonial === index 
                     ? 'bg-brand-orange scale-125 shadow-lg' 
-                    : 'bg-brand-palace/30 hover:bg-brand-palace/50'
+                    : 'bg-white/30 hover:bg-white/50'
                 }`}
               />
             ))}
@@ -237,33 +237,33 @@ export const Testimonials: React.FC<TestimonialsProps> = ({ isSignedIn = false, 
 
         {/* Customer Stats Grid */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6">
-          <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/80 transition-all duration-300">
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20">
             <div className="text-3xl font-bold text-brand-orange mb-2">10,000+</div>
-            <div className="text-brand-palace/70 text-sm font-medium">Happy Customers</div>
+            <div className="text-gray-300 text-sm font-medium">Happy Customers</div>
           </div>
-          <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/80 transition-all duration-300">
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20">
             <div className="text-3xl font-bold text-brand-orange mb-2">4.9⭐</div>
-            <div className="text-brand-palace/70 text-sm font-medium">Average Rating</div>
+            <div className="text-gray-300 text-sm font-medium">Average Rating</div>
           </div>
-          <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/80 transition-all duration-300">
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20">
             <div className="text-3xl font-bold text-brand-orange mb-2">50,000+</div>
-            <div className="text-brand-palace/70 text-sm font-medium">Orders Delivered</div>
+            <div className="text-gray-300 text-sm font-medium">Orders Delivered</div>
           </div>
-          <div className="text-center bg-white/60 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/80 transition-all duration-300">
+          <div className="text-center bg-white/5 backdrop-blur-sm rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 border border-white/10 hover:border-white/20">
             <div className="text-3xl font-bold text-brand-orange mb-2">98%</div>
-            <div className="text-brand-palace/70 text-sm font-medium">Repeat Customers</div>
+            <div className="text-gray-300 text-sm font-medium">Repeat Customers</div>
           </div>
         </div>
 
         {/* Call to Action */}
         <div className="text-center mt-12">
-          <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-gradient-to-r from-brand-orange/10 to-yellow-400/10 rounded-2xl p-6 border-2 border-brand-orange/20">
+          <div className="inline-flex flex-col sm:flex-row items-center gap-4 bg-white/5 backdrop-blur-sm rounded-2xl p-6 border-2 border-white/10 hover:border-white/20 transition-all duration-300">
             <div className="text-4xl">🎊</div>
             <div className="text-center sm:text-left">
-              <div className="text-xl font-bold text-brand-palace mb-1">
+              <div className="text-xl font-bold text-white mb-1">
                 Join thousands of satisfied customers!
               </div>
-              <div className="text-brand-palace/70 text-sm">
+              <div className="text-gray-300 text-sm">
                 Experience the Mithai Palace difference today
               </div>
             </div>

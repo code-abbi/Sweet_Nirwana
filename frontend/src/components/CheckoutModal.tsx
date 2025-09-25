@@ -179,15 +179,15 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-800/95 backdrop-blur-md rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-white/20">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-brand-palace">🛒 Checkout</h2>
+        <div className="flex items-center justify-between p-6 border-b border-white/10">
+          <h2 className="text-2xl font-bold text-white">🛒 Checkout</h2>
           <button
             onClick={onClose}
             disabled={isProcessing}
-            className="p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100"
+            className="p-2 text-gray-400 hover:text-white rounded-full hover:bg-white/10 transition-colors"
           >
             <XMarkIcon className="w-6 h-6" />
           </button>
@@ -197,8 +197,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Order Summary */}
             <div className="lg:order-2">
-              <h3 className="text-xl font-bold text-brand-palace mb-4">📋 Order Summary</h3>
-              <div className="bg-brand-bg rounded-xl p-4 space-y-3">
+              <h3 className="text-xl font-bold text-white mb-4">📋 Order Summary</h3>
+              <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 space-y-3 border border-white/10">
                 {cartItems.map((item) => (
                   <div key={item.id} className="flex items-center space-x-3">
                     <img
@@ -207,16 +207,16 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                       className="w-16 h-16 rounded-lg object-cover"
                     />
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800">{item.name}</h4>
-                      <p className="text-sm text-gray-600">Qty: {item.cartQuantity}</p>
+                      <h4 className="font-semibold text-white">{item.name}</h4>
+                      <p className="text-sm text-gray-300">Qty: {item.cartQuantity}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-brand-palace">₹{(parseFloat(item.price) * item.cartQuantity).toFixed(2)}</p>
+                      <p className="font-bold text-brand-orange">₹{(parseFloat(item.price) * item.cartQuantity).toFixed(2)}</p>
                     </div>
                   </div>
                 ))}
-                <div className="border-t pt-3">
-                  <div className="flex justify-between items-center text-xl font-bold text-brand-palace">
+                <div className="border-t border-white/20 pt-3">
+                  <div className="flex justify-between items-center text-xl font-bold text-white">
                     <span>Total:</span>
                     <span>₹{totalPrice.toFixed(2)}</span>
                   </div>
@@ -229,135 +229,135 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               <div className="space-y-6">
                 {/* Delivery Information */}
                 <div>
-                  <h3 className="text-lg font-bold text-brand-palace mb-4">🚚 Delivery Information</h3>
+                  <h3 className="text-lg font-bold text-white mb-4">🚚 Delivery Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Full Name *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Full Name *</label>
                       <input
                         type="text"
                         value={formData.fullName}
                         onChange={(e) => handleInputChange('fullName', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.fullName ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.fullName ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="Enter your full name"
                       />
-                      {formErrors.fullName && <p className="text-red-500 text-xs mt-1">{formErrors.fullName}</p>}
+                      {formErrors.fullName && <p className="text-red-400 text-xs mt-1">{formErrors.fullName}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Phone Number *</label>
                       <input
                         type="tel"
                         value={formData.phone}
                         onChange={(e) => handleInputChange('phone', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.phone ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.phone ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="Enter 10-digit phone number"
                       />
-                      {formErrors.phone && <p className="text-red-500 text-xs mt-1">{formErrors.phone}</p>}
+                      {formErrors.phone && <p className="text-red-400 text-xs mt-1">{formErrors.phone}</p>}
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Email Address *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Email Address *</label>
                       <input
                         type="email"
                         value={formData.email}
                         onChange={(e) => handleInputChange('email', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.email ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.email ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="Enter your email"
                       />
-                      {formErrors.email && <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>}
+                      {formErrors.email && <p className="text-red-400 text-xs mt-1">{formErrors.email}</p>}
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Complete Address *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Complete Address *</label>
                       <textarea
                         value={formData.address}
                         onChange={(e) => handleInputChange('address', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.address ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.address ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="Enter your complete address"
                         rows={3}
                       />
-                      {formErrors.address && <p className="text-red-500 text-xs mt-1">{formErrors.address}</p>}
+                      {formErrors.address && <p className="text-red-400 text-xs mt-1">{formErrors.address}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">City *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">City *</label>
                       <input
                         type="text"
                         value={formData.city}
                         onChange={(e) => handleInputChange('city', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.city ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.city ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="Enter your city"
                       />
-                      {formErrors.city && <p className="text-red-500 text-xs mt-1">{formErrors.city}</p>}
+                      {formErrors.city && <p className="text-red-400 text-xs mt-1">{formErrors.city}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Pincode *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Pincode *</label>
                       <input
                         type="text"
                         value={formData.pincode}
                         onChange={(e) => handleInputChange('pincode', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.pincode ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.pincode ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="Enter 6-digit pincode"
                       />
-                      {formErrors.pincode && <p className="text-red-500 text-xs mt-1">{formErrors.pincode}</p>}
+                      {formErrors.pincode && <p className="text-red-400 text-xs mt-1">{formErrors.pincode}</p>}
                     </div>
                   </div>
                 </div>
 
                 {/* Payment Information */}
                 <div>
-                  <h3 className="text-lg font-bold text-brand-palace mb-4">💳 Payment Information</h3>
+                  <h3 className="text-lg font-bold text-white mb-4">💳 Payment Information</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Cardholder Name *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Cardholder Name *</label>
                       <input
                         type="text"
                         value={formData.cardholderName}
                         onChange={(e) => handleInputChange('cardholderName', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.cardholderName ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.cardholderName ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="Enter name on card"
                       />
-                      {formErrors.cardholderName && <p className="text-red-500 text-xs mt-1">{formErrors.cardholderName}</p>}
+                      {formErrors.cardholderName && <p className="text-red-400 text-xs mt-1">{formErrors.cardholderName}</p>}
                     </div>
 
                     <div className="md:col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Card Number *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Card Number *</label>
                       <input
                         type="text"
                         value={formData.cardNumber}
                         onChange={(e) => handleInputChange('cardNumber', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.cardNumber ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.cardNumber ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="1234 5678 9012 3456"
                         maxLength={19}
                       />
-                      {formErrors.cardNumber && <p className="text-red-500 text-xs mt-1">{formErrors.cardNumber}</p>}
+                      {formErrors.cardNumber && <p className="text-red-400 text-xs mt-1">{formErrors.cardNumber}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">Expiry Date *</label>
                       <input
                         type="text"
                         value={formData.expiryDate}
                         onChange={(e) => handleInputChange('expiryDate', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.expiryDate ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.expiryDate ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="MM/YY"
                         maxLength={5}
                       />
-                      {formErrors.expiryDate && <p className="text-red-500 text-xs mt-1">{formErrors.expiryDate}</p>}
+                      {formErrors.expiryDate && <p className="text-red-400 text-xs mt-1">{formErrors.expiryDate}</p>}
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">CVV *</label>
+                      <label className="block text-sm font-medium text-gray-300 mb-1">CVV *</label>
                       <input
                         type="text"
                         value={formData.cvv}
                         onChange={(e) => handleInputChange('cvv', e.target.value)}
-                        className={`w-full px-3 py-2 border rounded-lg ${formErrors.cvv ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full px-3 py-2 border rounded-lg bg-white/5 text-white placeholder-gray-400 ${formErrors.cvv ? 'border-red-500' : 'border-white/20'} focus:border-brand-orange focus:outline-none`}
                         placeholder="123"
                         maxLength={4}
                       />
-                      {formErrors.cvv && <p className="text-red-500 text-xs mt-1">{formErrors.cvv}</p>}
+                      {formErrors.cvv && <p className="text-red-400 text-xs mt-1">{formErrors.cvv}</p>}
                     </div>
                   </div>
                 </div>
@@ -369,8 +369,8 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                     disabled={isProcessing || cartItems.length === 0}
                     className={`w-full font-bold py-4 rounded-lg text-lg transition-all duration-300 ${
                       isProcessing
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-brand-orange hover:bg-brand-orange/90 text-white hover:scale-105'
+                        ? 'bg-gray-600 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-brand-orange to-yellow-500 hover:from-yellow-500 hover:to-brand-orange text-white hover:scale-105 shadow-lg hover:shadow-xl'
                     }`}
                   >
                     {isProcessing ? (

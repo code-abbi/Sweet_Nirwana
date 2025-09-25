@@ -87,14 +87,14 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
     return (
       <section className="mb-16">
         <div className="text-center py-12">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-6 py-2 mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-4 border border-white/20">
             <span className="text-2xl">🌍</span>
-            <span className="text-brand-palace font-semibold">Global Favorites</span>
+            <span className="text-white font-semibold">Global Favorites</span>
           </div>
-          <h2 className="text-4xl font-bold text-brand-palace mb-4">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Most Loved Global Desserts
           </h2>
-          <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-300 max-w-2xl mx-auto text-lg">
             Our international dessert collection is coming soon! Stay tuned for delicious global treats.
           </p>
         </div>
@@ -142,14 +142,14 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
       <section className="mb-16">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-6 py-2 mb-4">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-4 border border-white/20">
             <span className="text-2xl">🌍</span>
-            <span className="text-brand-palace font-semibold">Global Favorites</span>
+            <span className="text-white font-semibold">Global Favorites</span>
           </div>
-          <h2 className="text-4xl font-bold text-brand-palace mb-4">
+          <h2 className="text-4xl font-bold text-white mb-4">
             Most Loved Global Desserts
           </h2>
-          <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
+          <p className="text-gray-300 max-w-2xl mx-auto text-lg">
             Discover our most popular international desserts from around the world - each visit brings a new selection
           </p>
         </div>
@@ -161,7 +161,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
             <>
               <button
                 onClick={prevSlide}
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-brand-palace p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -169,7 +169,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
               </button>
               <button
                 onClick={nextSlide}
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/90 backdrop-blur-sm hover:bg-white text-brand-palace p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/20 hover:border-white/40"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -179,7 +179,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
           )}
 
           {/* Carousel Track */}
-          <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-yellow-50 to-orange-50 p-8">
+          <div className="overflow-hidden rounded-3xl bg-white/5 backdrop-blur-sm p-8 border border-white/10">
             <div 
               className="flex transition-transform duration-500 ease-in-out gap-8"
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
@@ -190,7 +190,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
                     {featuredSweets.slice(slideIndex * 3, (slideIndex + 1) * 3).map((sweet, index) => (
                       <div
                         key={sweet.id}
-                        className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden shine-effect animate-slide-in"
+                        className="group bg-white/10 backdrop-blur-sm rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden shine-effect animate-slide-in border border-white/20 hover:border-white/30"
                         style={{ animationDelay: `${index * 150}ms` }}
                       >
                         {/* Sweet Image */}
@@ -245,10 +245,10 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
 
                         {/* Sweet Details */}
                         <div className="p-6">
-                          <h3 className="text-xl font-bold text-brand-palace mb-2 group-hover:text-brand-orange transition-colors duration-300">
+                          <h3 className="text-xl font-bold text-white mb-2 group-hover:text-brand-orange transition-colors duration-300">
                             {sweet.name}
                           </h3>
-                          <p className="text-brand-palace/70 text-sm mb-4 line-clamp-2">
+                          <p className="text-gray-300 text-sm mb-4 line-clamp-2">
                             {sweet.description || "Delicious traditional sweet made with authentic ingredients and time-honored recipes."}
                           </p>
                           
@@ -259,7 +259,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
                             </div>
                             <div className="flex items-center gap-1">
                               <span className="text-yellow-400">{getRating(sweet.name).stars}</span>
-                              <span className="text-xs text-brand-palace/60">({getRating(sweet.name).score})</span>
+                              <span className="text-xs text-gray-400">({getRating(sweet.name).score})</span>
                             </div>
                           </div>
                           
@@ -300,7 +300,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     currentSlide === index 
                       ? 'bg-brand-orange scale-125' 
-                      : 'bg-brand-palace/30 hover:bg-brand-palace/50'
+                      : 'bg-white/30 hover:bg-white/50'
                   }`}
                 />
               ))}
@@ -310,9 +310,9 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
 
         {/* Bottom Call to Action */}
         <div className="text-center mt-12">
-          <div className="inline-flex items-center gap-4 bg-white/80 backdrop-blur-sm rounded-2xl px-8 py-4 shadow-lg">
+          <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-sm rounded-2xl px-8 py-4 shadow-lg border border-white/20">
             <span className="text-2xl">🎯</span>
-            <span className="text-brand-palace font-semibold">Can't decide? Try our</span>
+            <span className="text-white font-semibold">Can't decide? Try our</span>
             <button 
               onClick={onMixedBoxClick}
               className="bg-gradient-to-r from-brand-orange to-yellow-500 text-white font-bold px-6 py-2 rounded-full hover:scale-105 transition-all duration-300 shadow-lg"

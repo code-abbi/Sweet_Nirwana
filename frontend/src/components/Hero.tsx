@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 
 const InfoChip: React.FC<{ children: React.ReactNode; delay?: number }> = ({ children, delay = 0 }) => (
   <div 
-    className="bg-white/80 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-brand-palace shadow-sm 
-               hover:bg-white/90 hover:scale-105 transition-all duration-300 cursor-pointer animate-bounce-in"
+    className="bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-medium text-white shadow-sm border border-white/20
+               hover:bg-white/20 hover:scale-105 transition-all duration-300 cursor-pointer animate-bounce-in"
     style={{ animationDelay: `${delay}ms` }}
   >
     {children}
@@ -47,7 +47,7 @@ const Counter: React.FC<{ end: number; label: string; prefix?: string; suffix?: 
       <div className="text-2xl font-bold text-brand-orange">
         {prefix}{count}{suffix}
       </div>
-      <div className="text-sm text-brand-palace/70 font-medium">{label}</div>
+      <div className="text-sm text-gray-300 font-medium">{label}</div>
     </div>
   );
 };
@@ -124,15 +124,15 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
         }
       `}</style>
       
-      <div className="relative bg-gradient-to-br from-brand-bg-light via-yellow-50 to-orange-50 rounded-3xl shadow-2xl overflow-hidden mb-12 min-h-[600px]">
+      <div className="relative bg-gradient-to-br from-gray-800/90 via-slate-800/80 to-gray-900/90 backdrop-blur-sm rounded-3xl shadow-2xl overflow-hidden mb-12 min-h-[600px] border border-white/10">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <img
             src="/hero-background.jpg"
             alt="Assortment of Indian sweets"
-            className="w-full h-full object-cover opacity-10"
+            className="w-full h-full object-cover opacity-20"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-brand-bg-light/90 via-yellow-50/70 to-orange-50/50"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-slate-800/60 to-gray-800/40"></div>
           
           {/* Floating Sweet Emojis */}
           <FloatingSweet emoji="🍬" delay={0} position="top-10 left-10" />
@@ -149,7 +149,7 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
             <span className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg animate-glow">
               ✨ Premium Quality Since 1947
             </span>
-            <span className="bg-white/90 backdrop-blur-sm text-brand-palace text-xs font-bold px-4 py-2 rounded-full shadow-md">
+            <span className="bg-white/10 backdrop-blur-sm text-white text-xs font-bold px-4 py-2 rounded-full shadow-md border border-white/20">
               ⭐ 4.9/5 Customer Rating
             </span>
           </div>
@@ -181,7 +181,7 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
               </div>
             </div>
             
-            <div className="mt-4 text-xl text-brand-palace/70 font-medium italic">
+            <div className="mt-4 text-xl text-gray-300 font-medium italic">
               "Where Tradition Meets Sweet Perfection"
             </div>
           </div>
@@ -189,7 +189,7 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
           {/* Dynamic Slogan */}
           <div className="text-center mb-10">
             <div className="h-16 flex items-center justify-center">
-              <p className="text-xl md:text-2xl text-brand-palace/80 font-medium max-w-3xl mx-auto transition-all duration-1000 transform">
+              <p className="text-xl md:text-2xl text-gray-200 font-medium max-w-3xl mx-auto transition-all duration-1000 transform">
                 {slogans[currentSlogan]}
               </p>
             </div>
@@ -197,16 +197,16 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
 
           {/* Statistics Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-10">
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/10">
               <Counter end={75} suffix="+" label="Years of Excellence" />
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/10">
               <Counter end={50} suffix="+" label="Sweet Varieties" />
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/10">
               <Counter end={10000} suffix="+" label="Happy Customers" />
             </div>
-            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
+            <div className="bg-white/5 backdrop-blur-sm rounded-xl p-4 text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-white/10">
               <Counter end={99} suffix="%" label="Pure Ingredients" />
             </div>
           </div>
@@ -230,13 +230,13 @@ export const Hero: React.FC<HeroProps> = ({ isSignedIn = false, onSignIn }) => {
               </button>
               <button 
                 onClick={handleOrderNow}
-                className="bg-white/90 backdrop-blur-sm text-brand-palace font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:bg-white transform hover:-translate-y-1 transition-all duration-300 border-2 border-brand-orange/20 hover:border-brand-orange/40"
+                className="bg-white/10 backdrop-blur-sm text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl hover:bg-white/20 transform hover:-translate-y-1 transition-all duration-300 border-2 border-white/20 hover:border-white/40"
               >
                 📱 Order Now
               </button>
             </div>
             
-            <div className="mt-4 text-sm text-brand-palace/60">
+            <div className="mt-4 text-sm text-gray-400">
               🎉 Free delivery on orders above ₹500 | 🕐 Same day delivery available
             </div>
           </div>

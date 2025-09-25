@@ -17,7 +17,7 @@ const FeatureCard: React.FC<{
 
   return (
     <div
-      className={`group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-2 overflow-hidden ${
+      className={`group relative bg-white/5 backdrop-blur-sm rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-700 hover:-translate-y-2 overflow-hidden border border-white/10 hover:border-white/20 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
       }`}
     >
@@ -31,10 +31,10 @@ const FeatureCard: React.FC<{
         <div className="text-4xl mb-4 transform group-hover:scale-110 transition-transform duration-300">
           {icon}
         </div>
-        <h3 className="text-xl font-bold text-brand-palace mb-3 group-hover:text-brand-orange transition-colors duration-300">
+        <h3 className="text-xl font-bold text-white mb-3 group-hover:text-brand-orange transition-colors duration-300">
           {title}
         </h3>
-        <p className="text-brand-palace/70 text-sm leading-relaxed mb-3">
+        <p className="text-gray-300 text-sm leading-relaxed mb-3">
           {description}
         </p>
         {highlight && (
@@ -61,10 +61,10 @@ const ProcessStep: React.FC<{
       <div className="absolute -top-2 -right-2 text-lg">{icon}</div>
     </div>
     <div>
-      <h4 className="font-bold text-brand-palace mb-1 group-hover:text-brand-orange transition-colors duration-300">
+      <h4 className="font-bold text-white mb-1 group-hover:text-brand-orange transition-colors duration-300">
         {title}
       </h4>
-      <p className="text-brand-palace/70 text-sm">{description}</p>
+      <p className="text-gray-300 text-sm">{description}</p>
     </div>
   </div>
 );
@@ -95,14 +95,14 @@ export const InfoCards: React.FC<InfoCardsProps> = ({ onMixedBoxClick }) => {
         {/* Why Choose Us Section */}
         <div>
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-100 to-purple-100 rounded-full px-6 py-2 mb-4">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-4 border border-white/20">
               <span className="text-2xl">💎</span>
-              <span className="text-brand-palace font-semibold">Excellence in Every Bite</span>
+              <span className="text-white font-semibold">Excellence in Every Bite</span>
             </div>
-            <h2 className="text-4xl font-bold text-brand-palace mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Why Choose Mithai Palace?
             </h2>
-            <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
+            <p className="text-gray-300 max-w-2xl mx-auto text-lg">
               Discover what makes us the premier destination for authentic Indian sweets
             </p>
           </div>
@@ -140,13 +140,13 @@ export const InfoCards: React.FC<InfoCardsProps> = ({ onMixedBoxClick }) => {
         </div>
 
         {/* Our Process Section */}
-        <div className="bg-gradient-to-br from-yellow-50 via-orange-50 to-red-50 rounded-3xl p-8 md:p-12">
+        <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 md:p-12 border border-white/10">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-white/80 backdrop-blur-sm rounded-full px-6 py-2 mb-4">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-4 border border-white/20">
               <span className="text-2xl">⚡</span>
-              <span className="text-brand-palace font-semibold">From Kitchen to Your Door</span>
+              <span className="text-white font-semibold">From Kitchen to Your Door</span>
             </div>
-            <h2 className="text-4xl font-bold text-brand-palace mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Our Sweet Making Process
             </h2>
           </div>
@@ -182,11 +182,11 @@ export const InfoCards: React.FC<InfoCardsProps> = ({ onMixedBoxClick }) => {
         {/* Special Services Section */}
         <div>
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-pink-100 to-rose-100 rounded-full px-6 py-2 mb-4">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-4 border border-white/20">
               <span className="text-2xl">🎊</span>
-              <span className="text-brand-palace font-semibold">Special Services</span>
+              <span className="text-white font-semibold">Special Services</span>
             </div>
-            <h2 className="text-4xl font-bold text-brand-palace mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Making Your Celebrations Sweet
             </h2>
           </div>
@@ -201,8 +201,8 @@ export const InfoCards: React.FC<InfoCardsProps> = ({ onMixedBoxClick }) => {
                   ✨
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-brand-palace mb-3">Custom Orders</h3>
-              <p className="text-brand-palace/70 mb-4">
+              <h3 className="text-xl font-bold text-white mb-3">Custom Orders</h3>
+              <p className="text-gray-300 mb-4">
                 Special occasion? We create custom sweet boxes and arrangements for weddings, festivals, and celebrations.
               </p>
               <div className="bg-gradient-to-r from-pink-500/10 to-rose-500/10 rounded-xl p-4 border border-pink-200 animate-pulse-border">
@@ -219,8 +219,8 @@ export const InfoCards: React.FC<InfoCardsProps> = ({ onMixedBoxClick }) => {
                   💼
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-brand-palace mb-3">Corporate Gifts</h3>
-              <p className="text-brand-palace/70 mb-4">
+              <h3 className="text-xl font-bold text-white mb-3">Corporate Gifts</h3>
+              <p className="text-gray-300 mb-4">
                 Premium gift boxes perfect for corporate events, client appreciation, and employee celebrations.
               </p>
               <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 rounded-xl p-4 border border-green-200 animate-pulse-border">
@@ -237,8 +237,8 @@ export const InfoCards: React.FC<InfoCardsProps> = ({ onMixedBoxClick }) => {
                   ⚡
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-brand-palace mb-3">Express Delivery</h3>
-              <p className="text-brand-palace/70 mb-4">
+              <h3 className="text-xl font-bold text-white mb-3">Express Delivery</h3>
+              <p className="text-gray-300 mb-4">
                 Need sweets urgently? Our express delivery service ensures your order reaches you within 2 hours.
               </p>
               <div className="bg-gradient-to-r from-blue-500/10 to-indigo-500/10 rounded-xl p-4 border border-blue-200 animate-pulse-border">

@@ -321,13 +321,13 @@ const SweetShopPage: React.FC = () => {
 
 
   return (
-    <div className="bg-gradient-to-br from-brand-bg via-yellow-50/30 to-orange-50/30 min-h-screen relative overflow-x-hidden">
+    <div className="bg-gradient-to-br from-gray-900 via-slate-900 to-gray-800 min-h-screen relative overflow-x-hidden">
       {/* Background Decorative Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-20 left-10 w-32 h-32 bg-yellow-200/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-40 right-20 w-24 h-24 bg-orange-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
-        <div className="absolute bottom-40 left-1/4 w-40 h-40 bg-red-200/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
-        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-pink-200/20 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-orange-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-40 right-20 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+        <div className="absolute bottom-40 left-1/4 w-40 h-40 bg-amber-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+        <div className="absolute bottom-20 right-1/3 w-28 h-28 bg-orange-400/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '3s' }}></div>
       </div>
 
       {/* Main Content */}
@@ -387,14 +387,14 @@ const SweetShopPage: React.FC = () => {
         {/* Complete Collection Section */}
         <section id="complete-collection" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-100 to-teal-100 rounded-full px-6 py-2 mb-6">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-full px-6 py-2 mb-6">
               <span className="text-2xl">🍭</span>
-              <span className="text-brand-palace font-semibold">Complete Collection</span>
+              <span className="text-white font-semibold">Complete Collection</span>
             </div>
-            <h2 className="text-4xl font-bold text-brand-palace mb-4">
+            <h2 className="text-4xl font-bold text-white mb-4">
               Explore All Our Sweets
             </h2>
-            <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
+            <p className="text-gray-300 max-w-2xl mx-auto text-lg">
               From traditional classics to global innovations, discover our complete range of authentic desserts
             </p>
           </div>
@@ -403,7 +403,7 @@ const SweetShopPage: React.FC = () => {
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-16 w-16 border-4 border-brand-orange border-t-transparent mx-auto mb-4"></div>
-                <p className="text-brand-palace/70 text-lg">Loading delicious sweets...</p>
+                <p className="text-gray-300 text-lg">Loading delicious sweets...</p>
               </div>
             </div>
           ) : (
@@ -426,11 +426,11 @@ const SweetShopPage: React.FC = () => {
           {/* Bottom CTA Section */}
           {sweets.length > 0 && (
             <div className="text-center mt-16">
-              <div className="bg-gradient-to-r from-brand-orange/10 to-yellow-400/10 rounded-3xl p-8 border-2 border-brand-orange/20">
-                <h3 className="text-2xl font-bold text-brand-palace mb-4">
+              <div className="bg-white/5 backdrop-blur-sm rounded-3xl p-8 border-2 border-white/10">
+                <h3 className="text-2xl font-bold text-white mb-4">
                   Can't decide? Try our Sweet Sampler Box! 🎁
                 </h3>
-                <p className="text-brand-palace/70 mb-6 max-w-2xl mx-auto">
+                <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
                   Get a taste of our delicious sweets with our randomly curated sampler box. 
                   Different selection every time - Perfect for discovery or as a gift!
                 </p>

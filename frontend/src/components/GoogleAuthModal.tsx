@@ -83,14 +83,14 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+      <div className="bg-gray-800/90 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto border border-white/20">
         {/* Loading Overlay */}
         {isLoading && (
-          <div className="absolute inset-0 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center z-50">
+          <div className="absolute inset-0 bg-gray-800/95 backdrop-blur-sm rounded-2xl flex items-center justify-center z-50">
             <div className="text-center">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-brand-orange border-t-transparent mx-auto mb-4"></div>
-              <p className="text-gray-700 font-medium">Signing you in...</p>
+              <p className="text-white font-medium">Signing you in...</p>
               <div className="flex justify-center mt-2 space-x-1">
                 <div className="w-2 h-2 bg-brand-orange rounded-full animate-bounce"></div>
                 <div className="w-2 h-2 bg-brand-orange rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
@@ -101,7 +101,7 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
         )}
 
         {/* Header */}
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <div className="flex items-center justify-center w-10 h-10 bg-gradient-to-r from-brand-orange to-yellow-500 rounded-full mr-3">
@@ -113,13 +113,13 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
                 </svg>
               </div>
               <div>
-                <h3 className="text-xl font-bold text-gray-900">Sign in with Google</h3>
-                <p className="text-sm text-gray-600">Choose your account to continue</p>
+                <h3 className="text-xl font-bold text-white">Sign in with Google</h3>
+                <p className="text-sm text-gray-300">Choose your account to continue</p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-gray-400 hover:text-white transition-colors"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -150,8 +150,8 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
                     selectedAccount === account.email
                       ? `bg-gradient-to-r ${account.bgColor} border-transparent text-white shadow-lg`
                       : hoveredAccount === account.id
-                      ? 'border-gray-300 bg-gray-50 shadow-md'
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                      ? 'border-white/30 bg-white/10 shadow-md'
+                      : 'border-white/20 hover:border-white/30 hover:shadow-sm hover:bg-white/5'
                   }`}
                 >
                   {/* Background Gradient Animation */}
@@ -160,18 +160,18 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
                   )}
                   
                   {/* Avatar */}
-                  <div className="flex-shrink-0 w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mr-4 relative z-10">
+                  <div className="flex-shrink-0 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mr-4 relative z-10">
                     <span className="text-lg">{account.avatar}</span>
                   </div>
                   
                   <div className="flex-1 min-w-0 relative z-10">
                     <div className={`text-sm font-bold truncate transition-colors duration-300 ${
-                      selectedAccount === account.email ? 'text-white' : 'text-gray-900'
+                      selectedAccount === account.email ? 'text-white' : 'text-white'
                     }`}>
                       {account.name}
                     </div>
                     <div className={`text-sm truncate transition-colors duration-300 ${
-                      selectedAccount === account.email ? 'text-white/80' : 'text-gray-600'
+                      selectedAccount === account.email ? 'text-white/80' : 'text-gray-300'
                     }`}>
                       {account.email}
                     </div>
@@ -185,12 +185,12 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
                       </span>
                     )}
                     {account.status === 'signed-out' && (
-                      <span className="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-medium">
+                      <span className="text-xs bg-white/10 text-gray-300 px-3 py-1 rounded-full font-medium border border-white/20">
                         Signed out
                       </span>
                     )}
                     {account.status === 'active' && hoveredAccount === account.id && (
-                      <span className="text-xs bg-green-100 text-green-700 px-3 py-1 rounded-full font-medium">
+                      <span className="text-xs bg-green-500/20 text-green-300 px-3 py-1 rounded-full font-medium border border-green-500/30">
                         ✓ Ready
                       </span>
                     )}
@@ -221,18 +221,18 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
                 }
               }}
               disabled={isLoading}
-              className="w-full flex items-center p-4 rounded-xl border-2 border-dashed border-gray-300 hover:border-brand-orange hover:bg-orange-50 transition-all duration-300 text-left group"
+              className="w-full flex items-center p-4 rounded-xl border-2 border-dashed border-white/30 hover:border-brand-orange hover:bg-brand-orange/10 transition-all duration-300 text-left group"
             >
-              <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4 group-hover:bg-brand-orange transition-all duration-300">
-                <svg className="w-6 h-6 text-gray-600 group-hover:text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex-shrink-0 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mr-4 group-hover:bg-brand-orange transition-all duration-300">
+                <svg className="w-6 h-6 text-gray-300 group-hover:text-white transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
-              <div className="text-sm font-bold text-gray-700 group-hover:text-brand-orange transition-colors duration-300">
+              <div className="text-sm font-bold text-white group-hover:text-brand-orange transition-colors duration-300">
                 ✨ Use another account
               </div>
               <div className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                <span className="text-xs bg-brand-orange/10 text-brand-orange px-2 py-1 rounded-full">Click me!</span>
+                <span className="text-xs bg-brand-orange/20 text-brand-orange px-2 py-1 rounded-full">Click me!</span>
               </div>
             </button>
           </div>
@@ -240,15 +240,15 @@ const GoogleAuthModal: React.FC<GoogleAuthModalProps> = ({ isOpen, onSignIn, onC
 
         {/* Footer */}
         <div className="px-6 pb-6">
-          <div className="flex justify-between items-center pt-4 border-t border-gray-200">
+          <div className="flex justify-between items-center pt-4 border-t border-white/10">
             <button
               onClick={onClose}
               disabled={isLoading}
-              className="text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+              className="text-sm font-medium text-gray-300 hover:text-white transition-colors"
             >
               Cancel
             </button>
-            <div className="flex items-center space-x-2 text-xs text-gray-500">
+            <div className="flex items-center space-x-2 text-xs text-gray-400">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
               <span>Secure sign-in</span>
             </div>
