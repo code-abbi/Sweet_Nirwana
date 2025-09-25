@@ -53,8 +53,9 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
   
   // Filter global desserts for Most Loved section and randomize their order
   const globalCategories = ['European', 'Middle Eastern', 'French', 'American', 'Japanese', 'Spanish', 'Australian', 'Italian', 'Latin American'];
-  const globalSweets = sweets.filter(sweet => globalCategories.includes(sweet.category));
+  const globalSweets = Array.isArray(sweets) ? sweets.filter(sweet => globalCategories.includes(sweet.category)) : [];
   const featuredSweets = useMemo(() => {
+    if (globalSweets.length === 0) return [];
     return [...globalSweets].sort(() => Math.random() - 0.5).slice(0, 6);
   }, [globalSweets.length, refreshKey]);
   

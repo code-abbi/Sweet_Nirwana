@@ -86,7 +86,8 @@ const SweetShopPage: React.FC = () => {
       setLoading(true);
       const response = await fetch(`${API_BASE_URL}/api/sweets`);
       const data = await response.json();
-      if (data.success) {
+      
+      if (data.success && Array.isArray(data.data)) {
         setSweets(data.data);
         
         // Only shuffle when user logs in for the first time or sweets change
@@ -103,9 +104,14 @@ const SweetShopPage: React.FC = () => {
           // Clear shuffled sweets when logged out
           setShuffledSweets([]);
         }
+      } else {
+        console.error('API response format error:', data);
+        setSweets([]); // Set to empty array as fallback
       }
     } catch (error) {
       console.error('Error fetching sweets:', error);
+      setSweets([]); // Set to empty array as fallback
+      showToast('Failed to load sweets. Please try again later.', 'error');
     } finally {
       setLoading(false);
     }
@@ -405,8 +411,8 @@ const SweetShopPage: React.FC = () => {
       return;
     }
 
-    // Filter available sweets (in stock)
-    const availableSweets = sweets.filter(sweet => sweet.quantity > 0);
+    // Filter available sweets (in stock) - with safety check
+    const availableSweets = Array.isArray(sweets) ? sweets.filter(sweet => sweet.quantity > 0) : [];
     if (availableSweets.length < 7) {
       showToast('Not enough sweets available for Mixed Box. Please try again later.', 'warning');
       return;
@@ -443,8 +449,8 @@ const SweetShopPage: React.FC = () => {
       return;
     }
 
-    // Filter available sweets (in stock)
-    const availableSweets = sweets.filter(sweet => sweet.quantity > 0);
+    // Filter available sweets (in stock) - with safety check
+    const availableSweets = Array.isArray(sweets) ? sweets.filter(sweet => sweet.quantity > 0) : [];
     if (availableSweets.length < 3) {
       showToast('Not enough sweets available for Sample Box. Please try again later.', 'warning');
       return;
@@ -693,7 +699,7 @@ const SweetShopPage: React.FC = () => {
                     : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20 hover:scale-105'
                 }`}
               >
-                🇮🇳 Indian Classics ({sweets.filter(s => indianCategories.includes(s.category)).length})
+                🇮🇳 Indian Classics ({Array.isArray(sweets) ? sweets.filter(s => indianCategories.includes(s.category)).length : 0})
               </button>
               <button
                 onClick={() => setSweetFilter('global')}
@@ -703,7 +709,7 @@ const SweetShopPage: React.FC = () => {
                     : 'bg-white/10 backdrop-blur-sm text-white border border-white/20 hover:bg-white/20 hover:scale-105'
                 }`}
               >
-                🌎 Global Delights ({sweets.filter(s => globalCategories.includes(s.category)).length})
+                🌎 Global Delights ({Array.isArray(sweets) ? sweets.filter(s => globalCategories.includes(s.category)).length : 0})
               </button>
             </div>
           </div>
