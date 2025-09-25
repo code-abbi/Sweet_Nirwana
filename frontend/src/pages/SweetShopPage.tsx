@@ -456,7 +456,7 @@ const SweetShopPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {[...sweets].sort(() => Math.random() - 0.5).map((sweet, index) => (
+              {[...filteredSweets].sort(() => Math.random() - 0.5).map((sweet, index) => (
                 <div
                   key={sweet.id}
                   className="animate-fade-in-up"
