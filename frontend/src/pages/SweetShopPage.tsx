@@ -11,7 +11,7 @@ import { InfoCards } from '../components/InfoCards';
 import { Testimonials } from '../components/Testimonials';
 import { CartSidebar } from '../components/CartSidebar';
 import { AdminPanel } from '../components/AdminPanel';
-import GoogleOAuthPage from '../components/GoogleOAuthPage';
+import GoogleAuthModal from '../components/GoogleAuthModal';
 
 const API_BASE_URL = 'http://localhost:3001';
 
@@ -318,17 +318,7 @@ const SweetShopPage: React.FC = () => {
   const totalItems = cart.reduce((sum, item) => sum + item.cartQuantity, 0);
   const totalPrice = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.cartQuantity, 0);
 
-  if (showGoogleOAuth) {
-    return (
-      <GoogleOAuthPage
-        onSignIn={(email) => {
-          signIn(email);
-          setShowGoogleOAuth(false);
-        }}
-        onCancel={() => setShowGoogleOAuth(false)}
-      />
-    );
-  }
+
 
   return (
     <div className="bg-gradient-to-br from-brand-bg via-yellow-50/30 to-orange-50/30 min-h-screen relative overflow-x-hidden">
@@ -485,6 +475,16 @@ const SweetShopPage: React.FC = () => {
           onClose={() => setIsAdminPanelOpen(false)}
         />
       )}
+
+      {/* Google Auth Modal */}
+      <GoogleAuthModal
+        isOpen={showGoogleOAuth}
+        onSignIn={(email: string) => {
+          signIn(email);
+          setShowGoogleOAuth(false);
+        }}
+        onClose={() => setShowGoogleOAuth(false)}
+      />
       </div>
     </div>
   );

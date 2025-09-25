@@ -19,19 +19,7 @@ interface NewSweetData {
   imageUrl?: string;
 }
 
-const AVAILABLE_IMAGES = [
-  { value: '/images/barfi.jpeg', label: 'Barfi' },
-  { value: '/images/gulab_jamun.jpeg', label: 'Gulab Jamun' },
-  { value: '/images/halwa.jpeg', label: 'Halwa' },
-  { value: '/images/jalebi.jpeg', label: 'Jalebi' },
-  { value: '/images/kaju_katli.jpeg', label: 'Kaju Katli' },
-  { value: '/images/khher.webp', label: 'Khher' },
-  { value: '/images/ladoo.jpeg', label: 'Ladoo' },
-  { value: '/images/mithai.jpeg', label: 'Mithai (Default)' },
-  { value: '/images/rasgulla.jpeg', label: 'Rasgulla' },
-  { value: '/images/samosa.jpeg', label: 'Samosa' },
-  { value: '/images/soan_papdi.jpeg', label: 'Soan Papdi' }
-];
+
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({
   sweets,
@@ -53,7 +41,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [errors, setErrors] = useState<{[key: string]: string}>({});
   const [loading, setLoading] = useState(false);
   const [deletingSweet, setDeletingSweet] = useState<string | null>(null);
-  const [imageSelectionMode, setImageSelectionMode] = useState<'dropdown' | 'url' | 'upload'>('dropdown');
+  const [imageSelectionMode, setImageSelectionMode] = useState<'upload'>('upload');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -131,7 +119,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         description: '',
         imageUrl: ''
       });
-      setImageSelectionMode('dropdown'); // Reset to dropdown mode
+      setImageSelectionMode('upload'); // Reset to upload mode
       setSelectedFile(null); // Reset selected file
       setErrors({});
       alert('Sweet added successfully!');
@@ -140,42 +128,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     }
   };
 
-  const handleInputChange = async (field: keyof NewSweetData, value: string) => {
-    // Handle Downloads path automatically
-    if (field === 'imageUrl' && value.startsWith('/Downloads/')) {
-      const filename = value.replace('/Downloads/', '');
-      
-      try {
-        // Call backend API to copy file from Downloads to sweet-images
-        const response = await fetch('http://localhost:3001/api/sweets/copy-image', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            filename: filename,
-            sourcePath: `/Users/avi.t/Downloads/${filename}`
-          }),
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          // Update with the proper image path
-          setNewSweet(prev => ({ ...prev, [field]: `/images/${filename}` }));
-          alert(`Image "${filename}" copied successfully!`);
-        } else {
-          const error = await response.json();
-          alert(`Failed to copy image: ${error.message || 'File not found in Downloads'}`);
-          setNewSweet(prev => ({ ...prev, [field]: value }));
-        }
-      } catch (error) {
-        console.error('Error copying image:', error);
-        alert('Failed to copy image. Please check the filename and try again.');
-        setNewSweet(prev => ({ ...prev, [field]: value }));
-      }
-    } else {
-      setNewSweet(prev => ({ ...prev, [field]: value }));
-    }
+  const handleInputChange = (field: keyof NewSweetData, value: string) => {
+    setNewSweet(prev => ({ ...prev, [field]: value }));
     
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
@@ -417,156 +371,60 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Sweet Image</label>
-                  
-                  {/* Image Selection Mode Toggle */}
-                  <div className="flex space-x-2 mb-3 flex-wrap">
-                    <button
-                      type="button"
-                      onClick={() => setImageSelectionMode('dropdown')}
-                      className={`px-3 py-1 text-sm rounded ${
-                        imageSelectionMode === 'dropdown'
-                          ? 'bg-brand-palace text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      📋 Choose Available
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageSelectionMode('upload')}
-                      className={`px-3 py-1 text-sm rounded ${
-                        imageSelectionMode === 'upload'
-                          ? 'bg-brand-palace text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      📁 Upload from Computer
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageSelectionMode('url')}
-                      className={`px-3 py-1 text-sm rounded ${
-                        imageSelectionMode === 'url'
-                          ? 'bg-brand-palace text-white'
-                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      }`}
-                    >
-                      🔗 Custom URL
-                    </button>
-                  </div>
+                  <p className="text-xs text-gray-500 mb-3">Upload an image from your computer (PNG, JPG, WebP up to 5MB)</p>
 
-                  {/* Image Selection Input */}
-                  {imageSelectionMode === 'dropdown' ? (
-                    <div>
-                      <select
-                        value={newSweet.imageUrl || '/images/mithai.jpeg'}
-                        onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                      >
-                        {AVAILABLE_IMAGES.map(image => (
-                          <option key={image.value} value={image.value}>
-                            {image.label}
-                          </option>
-                        ))}
-                      </select>
-                      
-                      {/* Image Preview */}
-                      <div className="mt-2">
-                        <img
-                          src={`http://localhost:3001${newSweet.imageUrl || '/images/mithai.jpeg'}`}
-                          alt="Preview"
-                          className="w-20 h-20 rounded-lg object-cover border"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="%23ddd"/><text x="40" y="40" text-anchor="middle" dy=".3em" fill="%23999">No Image</text></svg>';
-                          }}
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Preview</p>
+                  {/* Image Upload Section */}
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-brand-palace transition-colors">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      id="image-upload"
+                      disabled={uploading}
+                    />
+                    <label 
+                      htmlFor="image-upload" 
+                      className="cursor-pointer flex flex-col items-center space-y-2"
+                    >
+                      <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
+                        📁
                       </div>
-                    </div>
-                  ) : imageSelectionMode === 'upload' ? (
-                    <div>
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-brand-palace transition-colors">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={handleFileSelect}
-                          className="hidden"
-                          id="image-upload"
-                          disabled={uploading}
-                        />
-                        <label 
-                          htmlFor="image-upload" 
-                          className="cursor-pointer flex flex-col items-center space-y-2"
-                        >
-                          <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-                            📁
-                          </div>
-                          <div className="text-sm">
-                            <span className="font-medium text-brand-palace">Click to upload</span>
-                            <span className="text-gray-600"> or drag and drop</span>
-                          </div>
-                          <p className="text-xs text-gray-500">
-                            PNG, JPG, WebP up to 5MB
-                          </p>
-                        </label>
+                      <div className="text-sm">
+                        <span className="font-medium text-brand-palace">Click to upload image</span>
+                        <span className="text-gray-600"> or drag and drop</span>
                       </div>
-                      
-                      {uploading && (
-                        <div className="mt-2 flex items-center space-x-2">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-palace"></div>
-                          <span className="text-sm text-gray-600">Uploading...</span>
-                        </div>
-                      )}
-
-                      {selectedFile && !uploading && (
-                        <div className="mt-2 p-2 bg-gray-50 rounded border">
-                          <p className="text-sm text-gray-700">Selected: {selectedFile.name}</p>
-                        </div>
-                      )}
-
-                      {/* Upload Image Preview */}
-                      {newSweet.imageUrl && imageSelectionMode === 'upload' && (
-                        <div className="mt-2">
-                          <img
-                            src={`http://localhost:3001${newSweet.imageUrl}`}
-                            alt="Uploaded Preview"
-                            className="w-20 h-20 rounded-lg object-cover border"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="%23ddd"/><text x="40" y="40" text-anchor="middle" dy=".3em" fill="%23999">Upload Failed</text></svg>';
-                            }}
-                          />
-                          <p className="text-xs text-gray-500 mt-1">Uploaded Image</p>
-                        </div>
-                      )}
-                    </div>
-                  ) : (
-                    <div>
-                      <input
-                        type="text"
-                        value={newSweet.imageUrl || ''}
-                        onChange={(e) => handleInputChange('imageUrl', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                        placeholder="Enter /Downloads/filename.jpg or /images/filename.jpg"
-                      />
-                      <p className="text-xs text-gray-500 mt-1">
-                        💡 <strong>Easy mode:</strong> Type <code>/Downloads/yourfile.jpg</code> - I'll copy it automatically!<br/>
-                        Or use <code>/images/filename.jpg</code> for existing server images
+                      <p className="text-xs text-gray-500">
+                        PNG, JPG, WebP up to 5MB
                       </p>
-                      
-                      {/* URL Image Preview */}
-                      {newSweet.imageUrl && (
-                        <div className="mt-2">
-                          <img
-                            src={`http://localhost:3001${newSweet.imageUrl}`}
-                            alt="Preview"
-                            className="w-20 h-20 rounded-lg object-cover border"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="%23ddd"/><text x="40" y="40" text-anchor="middle" dy=".3em" fill="%23999">Invalid URL</text></svg>';
-                            }}
-                          />
-                          <p className="text-xs text-gray-500 mt-1">Preview</p>
-                        </div>
-                      )}
+                    </label>
+                  </div>
+                  
+                  {uploading && (
+                    <div className="mt-2 flex items-center space-x-2">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-brand-palace"></div>
+                      <span className="text-sm text-gray-600">Uploading...</span>
+                    </div>
+                  )}
+
+                  {selectedFile && !uploading && (
+                    <div className="mt-2 p-2 bg-gray-50 rounded border">
+                      <p className="text-sm text-gray-700">Selected: {selectedFile.name}</p>
+                    </div>
+                  )}
+
+                  {/* Upload Image Preview */}
+                  {newSweet.imageUrl && (
+                    <div className="mt-2">
+                      <img
+                        src={`http://localhost:3001${newSweet.imageUrl}`}
+                        alt="Uploaded Preview"
+                        className="w-20 h-20 rounded-lg object-cover border"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="%23ddd"/><text x="40" y="40" text-anchor="middle" dy=".3em" fill="%23999">Upload Failed</text></svg>';
+                        }}
+                      />
+                      <p className="text-xs text-gray-500 mt-1">Uploaded Image</p>
                     </div>
                   )}
                 </div>

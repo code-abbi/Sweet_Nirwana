@@ -8,7 +8,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { useAuth } from '../contexts/AuthContext';
 import { Sweet } from '../types';
-import GoogleOAuthPage from './GoogleOAuthPage';
+import GoogleAuthModal from './GoogleAuthModal';
 
 const ADMIN_EMAIL = 'wildrabit001@gmail.com';
 const API_BASE_URL = 'http://localhost:3001';
@@ -417,20 +417,7 @@ const SweetShopApp: React.FC = () => {
     fetchSweets();
   };
 
-  // Show Google OAuth page when needed
-  if (showGoogleOAuth) {
-    return (
-      <GoogleOAuthPage
-        onSignIn={(email) => {
-          signIn(email);
-          setShowGoogleOAuth(false);
-        }}
-        onCancel={() => {
-          setShowGoogleOAuth(false);
-        }}
-      />
-    );
-  }
+
 
   if (loading) {
     return (
@@ -974,6 +961,16 @@ const SweetShopApp: React.FC = () => {
           </div>
         )}
       </main>
+
+      {/* Google Auth Modal */}
+      <GoogleAuthModal
+        isOpen={showGoogleOAuth}
+        onSignIn={(email: string) => {
+          signIn(email);
+          setShowGoogleOAuth(false);
+        }}
+        onClose={() => setShowGoogleOAuth(false)}
+      />
     </div>
   );
 };
