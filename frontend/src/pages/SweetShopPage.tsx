@@ -395,7 +395,7 @@ const SweetShopPage: React.FC = () => {
               Explore All Our Sweets
             </h2>
             <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
-              From traditional classics to modern innovations, discover our complete range of authentic Indian sweets
+              From traditional classics to global innovations, discover our complete range of authentic desserts
             </p>
           </div>
 
@@ -408,7 +408,7 @@ const SweetShopPage: React.FC = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-              {sweets.map((sweet, index) => (
+              {[...sweets].sort(() => Math.random() - 0.5).map((sweet, index) => (
                 <div
                   key={sweet.id}
                   className="animate-fade-in-up"

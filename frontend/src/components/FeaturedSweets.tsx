@@ -1,5 +1,5 @@
 // frontend/src/components/FeaturedSweets.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Sweet } from '../types';
 
 const API_BASE_URL = 'http://localhost:3001';
@@ -48,9 +48,22 @@ interface FeaturedSweetsProps {
 
 export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToCart, onMixedBoxClick }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   
-  // Get featured sweets (first 6 or all if less than 6)
-  const featuredSweets = sweets.slice(0, 6);
+  // Filter global desserts for Most Loved section and randomize their order
+  const globalCategories = ['European', 'Middle Eastern', 'French', 'American', 'Japanese', 'Spanish', 'Australian', 'Italian', 'Latin American'];
+  const globalSweets = sweets.filter(sweet => globalCategories.includes(sweet.category));
+  const featuredSweets = useMemo(() => {
+    return [...globalSweets].sort(() => Math.random() - 0.5).slice(0, 6);
+  }, [globalSweets.length, refreshKey]);
+  
+  // Refresh order periodically to show different combinations
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setRefreshKey(prev => prev + 1);
+    }, 15000); // Refresh every 15 seconds
+    return () => clearInterval(interval);
+  }, []);
   
   // Auto-rotate slides
   useEffect(() => {
@@ -70,7 +83,24 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
     setCurrentSlide(prev => prev === 0 ? Math.ceil(featuredSweets.length / 3) - 1 : prev - 1);
   };
 
-  if (featuredSweets.length === 0) return null;
+  if (featuredSweets.length === 0) {
+    return (
+      <section className="mb-16">
+        <div className="text-center py-12">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-6 py-2 mb-4">
+            <span className="text-2xl">🌍</span>
+            <span className="text-brand-palace font-semibold">Global Favorites</span>
+          </div>
+          <h2 className="text-4xl font-bold text-brand-palace mb-4">
+            Most Loved Global Desserts
+          </h2>
+          <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
+            Our international dessert collection is coming soon! Stay tuned for delicious global treats.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <>
@@ -113,14 +143,14 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
         {/* Section Header */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 rounded-full px-6 py-2 mb-4">
-            <span className="text-2xl">⭐</span>
-            <span className="text-brand-palace font-semibold">Customer Favorites</span>
+            <span className="text-2xl">🌍</span>
+            <span className="text-brand-palace font-semibold">Global Favorites</span>
           </div>
           <h2 className="text-4xl font-bold text-brand-palace mb-4">
-            Most Loved Sweets
+            Most Loved Global Desserts
           </h2>
           <p className="text-brand-palace/70 max-w-2xl mx-auto text-lg">
-            Discover our most popular sweets that have been delighting customers for generations
+            Discover our most popular international desserts from around the world - each visit brings a new selection
           </p>
         </div>
 
