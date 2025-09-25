@@ -7,7 +7,7 @@ A beautiful, full-stack Indian sweet shop e-commerce application with Google OAu
 ### 🔐 Authentication
 - **Google OAuth Integration**: Authentic Google account selection page
 - **Mock Authentication System**: Multiple test accounts for development
-- **Role-based Access**: Admin detection for `wildrabit001@gmail.com`
+- **Role-based Access**: Admin detection for `admin-email`
 - **Clean UI**: Simple sign-out button without username display
 
 ### 🛒 Shopping Experience
@@ -97,8 +97,8 @@ sweet_shop_pro/
 ### Installation
 1. **Clone the repository**:
 ```bash
-git clone https://github.com/code-abbi/sweet_shop_sys.git
-cd sweet_shop_pro
+git clone https://github.com/code-abbi/Sweet_Nirwana.git
+cd sweet_nirwana
 ```
 
 2. **Backend Setup**:

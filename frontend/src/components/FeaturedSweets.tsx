@@ -242,7 +242,7 @@ export const FeaturedSweets: React.FC<FeaturedSweetsProps> = ({ sweets, onAddToC
                           ) : (
                             <div className="absolute top-4 right-4">
                               <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                ❌ Out of Stock
+                                ✖️ Out of Stock
                               </span>
                             </div>
                           )}
