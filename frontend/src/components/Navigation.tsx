@@ -26,10 +26,26 @@ export const Navigation: React.FC<NavigationProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-             <img src="/favicon.ico" alt="Mithai Palace logo" className="h-8 w-auto" />
-            <div className="ml-3">
-                <h1 className="text-xl font-bold text-brand-palace">Mithai Palace</h1>
-                <p className="text-xs text-brand-palace/70">Traditional Indian Sweets</p>
+            <div className="flex items-center space-x-3">
+              {/* Logo Icon */}
+              <div className="relative">
+                <div className="w-12 h-12 bg-gradient-to-br from-brand-orange to-brand-palace rounded-xl flex items-center justify-center shadow-lg">
+                  <span className="text-white text-xl font-bold">🏰</span>
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-yellow-400 rounded-full flex items-center justify-center">
+                  <span className="text-xs">👑</span>
+                </div>
+              </div>
+              
+              {/* Brand Text */}
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-palace to-brand-orange bg-clip-text text-transparent">
+                  Mithai Palace
+                </h1>
+                <p className="text-xs text-brand-palace/70 font-medium">
+                  Traditional Indian Sweets Since 1947
+                </p>
+              </div>
             </div>
           </div>
 

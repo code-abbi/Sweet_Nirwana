@@ -196,9 +196,8 @@ const SweetShopPage: React.FC = () => {
     }
   };
   
-  const handleCheckout = async () => {
-    if (cart.length === 0) return;
-
+  const handleOrderComplete = async (orderData: any) => {
+    // Update stock quantities on the server after successful order
     const stockUpdatePromises = cart.map(item => {
       const sweet = sweets.find(s => s.id === item.id);
       if (sweet) {
@@ -207,10 +206,21 @@ const SweetShopPage: React.FC = () => {
       return Promise.resolve();
     });
     
-    await Promise.all(stockUpdatePromises);
-    
-    navigate('/checkout', { state: { cart } });
-    setIsCartOpen(false);
+    try {
+      await Promise.all(stockUpdatePromises);
+      
+      // Clear the cart after successful order
+      setCart([]);
+      setIsCartOpen(false);
+      
+      // Refresh sweets to show updated stock
+      fetchSweets();
+      
+      console.log('Order completed:', orderData);
+    } catch (error) {
+      console.error('Error updating stock after order:', error);
+      alert('Order was placed but there was an issue updating stock. Please contact support.');
+    }
   };
 
   const totalItems = cart.reduce((sum, item) => sum + item.cartQuantity, 0);
@@ -247,7 +257,8 @@ const SweetShopPage: React.FC = () => {
         totalPrice={totalPrice}
         onUpdateQuantity={handleUpdateCartQuantity}
         onRemoveItem={handleRemoveFromCart}
-        onCheckout={handleCheckout}
+        userEmail={user?.email}
+        onOrderComplete={handleOrderComplete}
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

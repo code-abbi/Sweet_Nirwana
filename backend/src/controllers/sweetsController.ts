@@ -11,12 +11,10 @@ interface AuthenticatedRequest extends Request {
 }
 
 export const sweetsController = {
-  // GET /api/sweets - List all sweets with optional filters
+  // GET /api/sweets - List all sweets (no pagination limit)
   getAllSweets: async (req: Request, res: Response): Promise<void> => {
     try {
       const {
-        page = '1',
-        limit = '10',
         search,
         category,
         minPrice,
@@ -24,15 +22,6 @@ export const sweetsController = {
         sortBy = 'name',
         sortOrder = 'asc'
       } = req.query;
-
-      const pageNum = parseInt(page as string, 10);
-      const limitNum = parseInt(limit as string, 10);
-      
-      // Validate pagination parameters
-      if (pageNum < 1 || limitNum < 1) {
-        res.status(400).json({ error: 'Invalid pagination parameters' });
-        return;
-      }
 
       const filters = {
         search: search as string,
@@ -43,21 +32,14 @@ export const sweetsController = {
         sortOrder: sortOrder as 'asc' | 'desc'
       };
 
-      const sweets = await SweetService.getAllSweets(pageNum, limitNum);
-      const totalCount = sweets.length; // For now, use sweets length
-      const totalPages = Math.ceil(totalCount / limitNum);
+      // Get all sweets without pagination (use a very large limit)
+      const allSweets = await SweetService.getAllSweets(1, 1000);
+      const totalCount = allSweets.length;
 
       res.status(200).json({
         success: true,
-        data: sweets,
-        pagination: {
-          page: pageNum,
-          limit: limitNum,
-          totalPages,
-          totalCount,
-          hasNext: pageNum < totalPages,
-          hasPrev: pageNum > 1
-        }
+        data: allSweets,
+        totalCount
       });
     } catch (error) {
       console.error('Error fetching sweets:', error);

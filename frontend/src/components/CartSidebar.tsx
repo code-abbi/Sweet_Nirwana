@@ -1,7 +1,7 @@
-// frontend/src/components/CartSidebar.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { XMarkIcon, PlusIcon, MinusIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { CartItem } from '../types';
+import { CheckoutModal } from './CheckoutModal';
 
 const API_BASE_URL = 'http://localhost:3001';
 
@@ -17,7 +17,8 @@ interface CartSidebarProps {
   totalPrice: number;
   onUpdateQuantity: (sweetId: string, newQuantity: number) => void;
   onRemoveItem: (sweetId: string) => void;
-  onCheckout: () => void;
+  userEmail?: string;
+  onOrderComplete: (orderData: any) => void;
 }
 
 export const CartSidebar: React.FC<CartSidebarProps> = ({
@@ -27,8 +28,10 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({
   totalPrice,
   onUpdateQuantity,
   onRemoveItem,
-  onCheckout,
+  userEmail,
+  onOrderComplete,
 }) => {
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   return (
     <>
       <div
@@ -89,13 +92,27 @@ export const CartSidebar: React.FC<CartSidebarProps> = ({
                 <span>Total:</span>
                 <span>₹{totalPrice.toFixed(2)}</span>
               </div>
-              <button onClick={onCheckout} className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white font-bold py-3 rounded-lg text-center transition-colors">
+              <button 
+                onClick={() => setIsCheckoutModalOpen(true)} 
+                className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white font-bold py-3 rounded-lg text-center transition-colors"
+              >
                 Proceed to Checkout
               </button>
             </div>
           )}
         </div>
       </div>
+      
+      <CheckoutModal
+        isOpen={isCheckoutModalOpen}
+        onClose={() => setIsCheckoutModalOpen(false)}
+        cartItems={cartItems}
+        userEmail={userEmail}
+        onOrderComplete={(orderData) => {
+          onOrderComplete(orderData);
+          setIsCheckoutModalOpen(false);
+        }}
+      />
     </>
   );
 };
