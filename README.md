@@ -35,7 +35,37 @@ A beautiful, full-stack Indian sweet shop e-commerce application with Google OAu
 - **Card Formatting**: Auto-format card numbers and dates
 - **Payment Processing**: Complete form validation before payment
 
-## 🚀 Tech Stack
+## � Screenshots
+
+### 🏠 Main Application Interface
+<div align="center">
+  <img src="./screenshot/home.png" alt="Sweet Nirvana Main Shop Interface" width="800"/>
+  <p><em>Beautiful Indian sweet shop with authentic products and modern e-commerce features</em></p>
+</div>
+
+### 🔐 Google Authentication
+<div align="center">
+  <img src="./screenshot/google_auth.png" alt="Google OAuth Login Flow" width="600"/>
+  <p><em>Seamless Google OAuth integration with authentic account selection</em></p>
+</div>
+
+### 🛒 Shopping Experience
+| Shopping Cart | Sweet Details View |
+|---------------|-------------------|
+| <img src="./screenshot/cart.png" alt="Shopping Cart" width="400"/> | <img src="./screenshot/sweet_view.png" alt="Individual Sweet Details" width="400"/> |
+
+### 💳 Checkout Process
+<div align="center">
+  <img src="./screenshot/checkout.png" alt="Checkout Form" width="700"/>
+  <p><em>Comprehensive checkout form with billing details and payment processing</em></p>
+</div>
+
+### 🍬 Admin Features
+| Add New Sweet | Inventory Management |
+|---------------|---------------------|
+| <img src="./screenshot/add_sweet.png" alt="Add Sweet Interface" width="400"/> | <img src="./screenshot/inventory_update.png" alt="Stock Updates" width="400"/> |
+
+## �🚀 Tech Stack
 
 ### Backend
 - **Runtime**: Node.js with TypeScript
